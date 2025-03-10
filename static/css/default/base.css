@@ -1,0 +1,21 @@
+.sitewrapper{
+    width: 800px;
+    margin: auto;
+    padding: 0;
+    border: 0;
+}
+.maincontent{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.sitename{
+    text-align: center;
+}
+.sectionname{
+    text-align: center;
+}
+.maincontent{
+    text-align: center;
+}

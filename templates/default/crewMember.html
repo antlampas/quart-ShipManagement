@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if crewMember is defined %}
+{% if (crewMember is iterable) and (crewMember is not string) and (crewMember is not mapping) %}
+{% for i in crewMember %}
+<p>{{ i }}</p>
+{% endfor %}
+{% else %}
+<p>{{ crewMember }}</p>
+{% endif %}
+{% endif %}
+{% endblock%}

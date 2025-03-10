@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if crew is defined %}
+{% if (crew is iterable) and (crew is not string) and (crew is not mapping) %}
+<li>
+    {% for i in crew %}
+    <ul><a href="/crew/member/{ i[0] }">{{ i[0] }}</a></ul>
+    {% endfor%}
+</li>
+{% else %}
+<p>{{ crew }}</p>
+{% endif %}
+{% endif %}
+{% endblock%}

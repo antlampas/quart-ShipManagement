@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/css/base.css">
+        <title>{{ config.SITENAME }} - {{ SECTIONNAME }}</title>
+    </head>
+    <body>
+        <div class="sitewrapper">
+            <div class="maincontent">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>
