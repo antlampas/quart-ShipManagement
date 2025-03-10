@@ -2,7 +2,7 @@ from quart import Quart
 
 def create_app():
     app = Quart(__name__)
-    app.config["SITENAME"] = "USS Picenum NCC-2025"
+    app.config["SITENAME"] = ""
 
     from model import db
     db.init_app(app)

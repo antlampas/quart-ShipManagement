@@ -25,7 +25,7 @@ class Crew:
 
     async def add(self,member:CrewMember) -> bool:
         pass
-    async def remove(self,member:CrewMember) -> bool:
+    async def remove(self,megit push -f origin mainmber:CrewMember) -> bool:
         pass
 
 @crew_blueprint.route("/",methods=["GET"])
