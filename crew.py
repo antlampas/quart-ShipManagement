@@ -55,6 +55,7 @@ async def member(member):
 
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
+    #TODO: implement Rank and Duties part
     form = AddCrewMemberForm()
     if request.method == 'GET':
         return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew")
