@@ -2,7 +2,7 @@ from quart import Quart
 
 def create_app():
     app = Quart(__name__)
-    app.config["SHIPNAME"] = ""
+    app.config["SHIPNAME"]       = ""
     app.config["REGISTRYNUMBER"] = ""
 
     from model import db
