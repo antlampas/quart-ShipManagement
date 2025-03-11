@@ -1,4 +1,4 @@
-from quart import Quart
+from quart  import Quart
 from config import Development,Production
 
 def create_app(mode='Development'):

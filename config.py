@@ -2,9 +2,9 @@ class Config:
     DEBUG          = False
     TESTING        = False
     SECRET_KEY     = 'secret'
+    DATABASEURL    = "sqlite:///"
     SHIPNAME       = ""
     REGISTRYNUMBER = ""
-    DATABASEURL    = "sqlite:///"
 
 class Development(Config):
     DEBUG = True
