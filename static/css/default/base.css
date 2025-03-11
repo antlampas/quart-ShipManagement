@@ -4,18 +4,16 @@
     padding: 0;
     border: 0;
 }
-.maincontent{
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-.sitename{
+.shipname{
     text-align: center;
 }
 .sectionname{
     text-align: center;
 }
 .maincontent{
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
     text-align: center;
 }
