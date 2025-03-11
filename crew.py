@@ -2,7 +2,7 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,CrewMemberTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
+from model import db,PersonalBaseInformationsTable,CrewMemberTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
 from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
@@ -44,13 +44,10 @@ async def member(member):
     crewMemberQuery = list()
     with db.bind.Session() as s:
         with s.begin():
-            crewMemberQuery = s.query(select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member).subquery()).one()
-
+            #crewMemberQuery = s.query(select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member).subquery()).one()
+            crewMemberQuery = s.query(select(PersonalBaseInformationsTable.Nickname).distinct(PersonalBaseInformationsTable.Nickname).where(PersonalBaseInformationsTable.Nickname==member).subquery()).one()
     if len(crewMember) > 0:
-        crewMember = CrewMember()
-        crewMember.FirstName = crewMemberQuery[0]
-        crewMember.LastName  = crewMemberQuery[1]
-        crewMember.Nickname  = crewMemberQuery[2]
+        crewMember = CrewMember(FirstName=crewMemberQuery[0],LastName=crewMemberQuery[1],Nickname=crewMemberQuery[2])
         #TODO: complete the query and the object with Rank and Duties
         return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
     else:
@@ -60,18 +57,59 @@ async def member(member):
 async def add():
     form = AddCrewMemberForm()
     if request.method == 'GET':
-        return await render_template("crewMemberAdd.html",SECTIONNAME="Crew")
+        return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
-        return await render_template("crewMemberAdd.html",SECTIONNAME="Crew")
+        firstname = (await request.form)['FirstName']
+        lastname  = (await request.form)['LastName']
+        nickname  = (await request.form)['Nickname']
+        personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
+        crewMember               = CrewMemberTable(Nickname=nickname)
+        if form.validate_on_submit():
+            try:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        s.add(personalBaseInformations)
+                        #s.add(crewMember)
+                        s.commit()
+            except Exception as e:
+                return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))
+            return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Success")
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
-@crew_blueprint.route("/remove",methods=["GET","POST"])
-async def remove():
+@crew_blueprint.route("/remove/<member>",methods=["GET","POST"])
+async def remove(member):
     form = RemoveCrewMemberForm()
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Crew")
 
-@crew_blueprint.route("/edit",methods=["GET","POST"])
-async def edit():
+@crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
+async def edit(member):
+    #TODO: Fix this function
     form = EditCrewMemberForm()
-    return await render_template("implement.html",implement="Implement!",SECTIONNAME="Crew")
+    crewMemberDB = ""
+    if request.method == 'GET':
+        with db.bind.Session() as s:
+            with s.begin():
+                #crewMemberDB = s.query(CrewMemberTable).filter_by(Nickname=member).one()
+                crewMemberDB = s.query(PersonalBaseInformationsTable).filter_by(Nickname=member).one()
+        form.FirstName.data = crewMemberDB.FirstName
+        form.LastName.data  = crewMemberDB.LastName
+        form.Nickname.data  = crewMemberDB.Nickname
+        return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew")
+    elif request.method == 'POST':
+        firstname = (await request.form)['FirstName']
+        lastname  = (await request.form)['LastName']
+        nickname  = (await request.form)['Nickname']
+        #crewMember = CrewMemberTable(FirstName=request.form['FirstName'],LastName=request.form['LastName'],Nickname=request.form['Nickname'])
+        crewMember = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
+        if form.validate_on_submit():
+            try:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        s.edit(crewMember)
+                        s.commit()
+            except:
+                return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Exception!")
+            return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Success")
+    else:
+        return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")

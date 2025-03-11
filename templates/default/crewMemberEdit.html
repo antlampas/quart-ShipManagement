@@ -1,4 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<form method="POST" action="/crew/edit/{{ FORM.Nickname.data }}">
+    {{ FORM.csrf_token }}
+    {{ FORM.FirstName.label }} {{ FORM.FirstName() }}<br />
+    {{ FORM.LastName.label  }} {{ FORM.LastName()  }}<br />
+    {{ FORM.Nickname.label  }} {{ FORM.Nickname()  }}<br />
+    <input type="submit" value="Edit">
+</form>
 {% endblock%}
