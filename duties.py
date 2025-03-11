@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from model import db,CrewMemberTable,DutyTable
 
-duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates')
+duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
 class Duty:
     def __init__(self):

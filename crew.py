@@ -3,9 +3,9 @@ from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
 from model import db,CrewMemberTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
-from form  import AddCrewMemberForm,RemoveMemberForm,EditCrewMemberForm
+from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
-crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates')
+crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
 
 class CrewMember:
     def __init__(self):
@@ -25,7 +25,7 @@ class Crew:
 
     async def add(self,member:CrewMember) -> bool:
         pass
-    async def remove(self,megit push -f origin mainmber:CrewMember) -> bool:
+    async def remove(self,member:CrewMember) -> bool:
         pass
 
 @crew_blueprint.route("/",methods=["GET"])
@@ -63,7 +63,7 @@ async def add():
         return await render_template("crewMemberAdd.html",SECTIONNAME="Crew")
     elif request.method == 'POST':
         return await render_template("crewMemberAdd.html",SECTIONNAME="Crew")
-    else
+    else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
 @crew_blueprint.route("/remove",methods=["GET","POST"])

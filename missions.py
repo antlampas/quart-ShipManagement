@@ -2,7 +2,7 @@ from quart import current_app,Blueprint
 
 from model import db,CrewMemberTable,TaskTable,MissionTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
 
-missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',template_folder='templates')
+missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',template_folder='templates/default')
 
 class Mission:
     def __init__(self):

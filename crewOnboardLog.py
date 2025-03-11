@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from model import db,CrewMemberTable,MemberDutyLogEntryTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
 
-crewOnboardLog_blueprint = Blueprint("crewOnboardLog",__name__,url_prefix='/crewOnboardLog',template_folder='templates')
+crewOnboardLog_blueprint = Blueprint("crewOnboardLog",__name__,url_prefix='/crewOnboardLog',template_folder='templates/default')
 
 class MemberOnboardLog:
     def __init__(self):

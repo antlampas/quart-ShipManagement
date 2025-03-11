@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from model import db,CrewMemberTable,RankTable
 
-ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates')
+ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates/default')
 
 class Rank:
     def __init__(self):

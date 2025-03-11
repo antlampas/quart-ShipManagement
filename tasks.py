@@ -2,7 +2,7 @@ from quart import current_app,Blueprint
 
 from model import db,CrewMemberTable,TaskTable,MemberTaskLogEntryTable
 
-tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder='templates')
+tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder='templates/default')
 
 class Task:
     async def __init__():
