@@ -1,5 +1,5 @@
 from quart_wtf          import QuartForm,CSRFProtect
-from wtforms            import StringField,PasswordField,SelectMultipleField,SubmitField
+from wtforms            import StringField,PasswordField,SelectField,SelectMultipleField,SubmitField
 from wtforms.validators import DataRequired,Email,EqualTo
 from wtforms.widgets    import PasswordInput
 
@@ -7,6 +7,8 @@ class AddCrewMemberForm(QuartForm):
     FirstName        = StringField('First name')
     LastName         = StringField('Last Name')
     Nickname         = StringField('Nickname')
+    Rank             = SelectField('Rank')
+    Duties           = SelectMultipleField('Duties')
 
 class RemoveCrewMemberForm(QuartForm):
     Nickname         = SelectMultipleField('Member')
@@ -15,6 +17,8 @@ class EditCrewMemberForm(QuartForm):
     FirstName        = StringField('First name')
     LastName         = StringField('Last Name')
     Nickname         = StringField('Nickname')
+    Rank             = SelectField('Rank')
+    Duties           = SelectMultipleField('Duties')
 
 class AddTaskForm(QuartForm):
     Name             = StringField('Task')
@@ -57,3 +61,25 @@ class EditMissionForm(QuartForm):
     EndedAt          = StringField('Ended At')
     Tasks            = SelectMultipleField('Tasks')
     Status           = StringField('Status')
+
+class AddRankForm(QuartForm):
+    Name        = StringField('Rank')
+    Description = StringField('Description')
+
+class EditRankForm(QuartForm):
+    Name        = StringField('Rank')
+    Description = StringField('Description')
+
+class RemoveRankForm(QuartForm):
+    Name = SelectMultipleField('Rank')
+
+class AddDutyForm(QuartForm):
+    Name        = StringField('Task')
+    Description = StringField('Description')
+
+class EditDutyForm(QuartForm):
+    Name        = StringField('Task')
+    Description = StringField('Description')
+
+class RemoveDutyForm(QuartForm):
+    Name = SelectMultipleField('Rank')

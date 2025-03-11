@@ -2,7 +2,7 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,PersonalBaseInformationsTable,CrewMemberTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
+from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
 from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
@@ -55,9 +55,19 @@ async def member(member):
 
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
-    #TODO: implement Rank and Duties part
-    form = AddCrewMemberForm()
+    form   = AddCrewMemberForm()
     if request.method == 'GET':
+        ranks  = []
+        duties = []
+        try:
+            with db.bind.Session() as s:
+                with s.begin():
+                    ranks  = s.scalars(select(RankTable.Name)).all()
+                    duties = s.scalars(select(DutyTable.Name)).all()
+        except Exception as e:
+                return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))
+        form.Rank.choices = [(r,r) for r in ranks]
+        form.Duties.choices = [(d,d) for d in duties]
         return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
         firstname = (await request.form)['FirstName']
