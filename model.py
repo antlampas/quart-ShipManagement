@@ -1,3 +1,4 @@
+from config                     import Config
 from sqlalchemy.orm             import Mapped, mapped_column,DeclarativeBase,relationship
 from sqlalchemy                 import ForeignKey
 from quart_sqlalchemy           import SQLAlchemyConfig
@@ -8,7 +9,7 @@ db = QuartSQLAlchemy(
         binds=dict(
             default=dict(
                 engine=dict(
-                    url="sqlite:///",
+                    url=Config.DATABASEURL,
                     echo=True,
                     connect_args=dict(check_same_thread=False),
                 ),

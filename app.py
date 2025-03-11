@@ -1,9 +1,9 @@
 from quart import Quart
+from config import Development,Production
 
-def create_app():
+def create_app(mode='Development'):
     app = Quart(__name__)
-    app.config["SHIPNAME"]       = ""
-    app.config["REGISTRYNUMBER"] = ""
+    app.config.from_object(f"config.{mode}")
 
     from model import db
     db.init_app(app)
