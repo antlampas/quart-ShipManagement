@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if divisions is defined %}
+{% if (divisions is iterable) and (divisions is not string) and (divisions is not mapping) %}
+<li>
+    {% for i in divisions %}
+    <ul><a href="/divisions/division/{ i[0] }">{{ i[0] }}</a></ul>
+    {% endfor%}
+</li>
+{% else %}
+<p>{{ divisions }}</p>
+{% endif %}
+{% endif %}
+{% endblock%}

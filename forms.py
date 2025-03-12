@@ -8,6 +8,7 @@ class AddCrewMemberForm(QuartForm):
     LastName         = StringField('Last Name')
     Nickname         = StringField('Nickname')
     Rank             = SelectField('Rank')
+    Division         = SelectField('Division')
     Duties           = SelectMultipleField('Duties')
 
 class RemoveCrewMemberForm(QuartForm):
@@ -18,6 +19,7 @@ class EditCrewMemberForm(QuartForm):
     LastName         = StringField('Last Name')
     Nickname         = StringField('Nickname')
     Rank             = SelectField('Rank')
+    Division         = SelectField('Division')
     Duties           = SelectMultipleField('Duties')
 
 class AddTaskForm(QuartForm):
@@ -82,4 +84,15 @@ class EditDutyForm(QuartForm):
     Description = StringField('Description')
 
 class RemoveDutyForm(QuartForm):
+    Name = SelectMultipleField('Rank')
+
+class AddDivisionForm(QuartForm):
+    Name        = StringField('Task')
+    Description = StringField('Description')
+
+class EditDivisionForm(QuartForm):
+    Name        = StringField('Task')
+    Description = StringField('Description')
+
+class RemoveDivisionForm(QuartForm):
     Name = SelectMultipleField('Rank')

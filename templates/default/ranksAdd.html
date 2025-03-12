@@ -3,8 +3,8 @@
 {% block content %}
 <FORM method="POST" action="/ranks/add">
     {{ FORM.csrf_token }}
-    {{ FORM.Name.label }} {{ FORM.Name() }}<br />
-    {{ FORM.Description.label  }} {{ FORM.Description()  }}<br />
+    {{ FORM.Name.label        }} {{ FORM.Name()        }}<br />
+    {{ FORM.Description.label }} {{ FORM.Description() }}<br />
     <input type="submit" value="Add">
 </FORM>
 <p>{{ MESSAGE }}</p>

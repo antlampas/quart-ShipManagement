@@ -1,4 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if duties is defined %}
+{% if (duties is iterable) and (duties is not string) and (duties is not mapping) %}
+<li>
+    {% for i in duties %}
+    <ul><a href="/duties/duty/{ i[0] }">{{ i[0] }}</a></ul>
+    {% endfor%}
+</li>
+{% else %}
+<p>{{ duties }}</p>
+{% endif %}
+{% endif %}
 {% endblock%}

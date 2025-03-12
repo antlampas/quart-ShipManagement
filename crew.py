@@ -73,8 +73,13 @@ async def add():
         firstname = (await request.form)['FirstName']
         lastname  = (await request.form)['LastName']
         nickname  = (await request.form)['Nickname']
+        rank      = (await request.form)['Rank']
+        duties    = (await request.form)['Duties']
+
         personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
-        crewMember               = CrewMemberTable(Nickname=nickname)
+        crewMemberRank           = CrewMembeRankrTable(Nickname=nickname,Rank=rank)
+        crewMemberDuties         = CrewMemberDutyTable(Nickname=nickname,Rank=rank,Duties=duties)
+
         if form.validate_on_submit():
             try:
                 with db.bind.Session() as s:

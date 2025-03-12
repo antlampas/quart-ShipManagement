@@ -1,4 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if ranks is defined %}
+{% if (ranks is iterable) and (ranks is not string) and (ranks is not mapping) %}
+<li>
+    {% for i in ranks %}
+    <ul><a href="/ranks/rank/{ i[0] }">{{ i[0] }}</a></ul>
+    {% endfor%}
+</li>
+{% else %}
+<p>{{ ranks }}</p>
+{% endif %}
+{% endif %}
 {% endblock%}
