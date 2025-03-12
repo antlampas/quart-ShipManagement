@@ -2,7 +2,7 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
+from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,DivisionTable,CrewMemberRankTable,CrewMemberDutyTable,CrewMemberDivisionTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
 from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
@@ -41,14 +41,13 @@ async def crew():
 
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
+    #TODO: Fix this function
     crewMemberQuery = list()
     with db.bind.Session() as s:
         with s.begin():
-            #crewMemberQuery = s.query(select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member).subquery()).one()
-            crewMemberQuery = s.query(select(PersonalBaseInformationsTable.Nickname).distinct(PersonalBaseInformationsTable.Nickname).where(PersonalBaseInformationsTable.Nickname==member).subquery()).one()
+            crewMemberQuery = s.query(select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable).where(CrewMemberTable.Nickname==member).subquery()).one()
     if len(crewMember) > 0:
-        crewMember = CrewMember(FirstName=crewMemberQuery[0],LastName=crewMemberQuery[1],Nickname=crewMemberQuery[2])
-        #TODO: complete the query and the object with Rank and Duties
+        crewMember = CrewMember(FirstName=crewMemberQuery[0],LastName=crewMemberQuery[1],Nickname=crewMemberQuery[2],Rank=crewMemberQuery[3],Division=crewMemberQuery[4],Duties=crewMemberQuery[5])
         return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
     else:
         return await render_template("crewMember.html",crewMember=str("No crew member found"),SECTIONNAME="Crew")
@@ -57,17 +56,20 @@ async def member(member):
 async def add():
     form   = AddCrewMemberForm()
     if request.method == 'GET':
-        ranks  = []
-        duties = []
+        ranks     = []
+        duties    = []
+        divisions = []
         try:
             with db.bind.Session() as s:
                 with s.begin():
-                    ranks  = s.scalars(select(RankTable.Name)).all()
-                    duties = s.scalars(select(DutyTable.Name)).all()
+                    ranks     = s.scalars(select(RankTable.Name)).all()
+                    duties    = s.scalars(select(DutyTable.Name)).all()
+                    divisions = s.scalars(select(DivisionTable.Name)).all()
         except Exception as e:
                 return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))
-        form.Rank.choices = [(r,r) for r in ranks]
-        form.Duties.choices = [(d,d) for d in duties]
+        form.Rank.choices     = [(r,r) for r in ranks]
+        form.Duties.choices   = [(d,d) for d in duties]
+        form.Division.choices = [(d,d) for d in divisions]
         return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
         firstname = (await request.form)['FirstName']
@@ -75,17 +77,23 @@ async def add():
         nickname  = (await request.form)['Nickname']
         rank      = (await request.form)['Rank']
         duties    = (await request.form)['Duties']
+        division  = (await request.form)['Division']
 
         personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
-        crewMemberRank           = CrewMembeRankrTable(Nickname=nickname,Rank=rank)
-        crewMemberDuties         = CrewMemberDutyTable(Nickname=nickname,Rank=rank,Duties=duties)
+        crewMember               = CrewMemberTable(Nickname=nickname)
+        crewMemberRank           = CrewMemberRankTable(Nickname=nickname,Rank=rank)
+        crewMemberDuties         = CrewMemberDutyTable(Nickname=nickname,Duties=duties)
+        crewMemberDivision       = CrewMemberDivisionTable(Nickname=nickname,Division=division)
 
         if form.validate_on_submit():
             try:
                 with db.bind.Session() as s:
                     with s.begin():
                         s.add(personalBaseInformations)
-                        #s.add(crewMember)
+                        s.add(crewMember)
+                        s.add(crewMemberRank)
+                        s.add(crewMemberDuties)
+                        s.add(crewMemberDivision)
                         s.commit()
             except Exception as e:
                 return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))

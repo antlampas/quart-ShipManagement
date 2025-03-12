@@ -49,9 +49,6 @@ class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
     Serial:   Mapped[str] = mapped_column(primary_key=True)
     Nickname: Mapped[str] = mapped_column(ForeignKey("Personaldb.ModelInformations.Nickname"))
-    Duty:     Mapped[str] = mapped_column(ForeignKey("Duty.Name"))
-    Rank:     Mapped[str] = mapped_column(ForeignKey("Rank.Name"))
-    Division: Mapped[str] = mapped_column(ForeignKey("Division.Name"))
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRankTable"

@@ -37,7 +37,7 @@ async def duty(duty):
 async def add():
     form = AddDutyForm()
     if request.method == 'GET':
-        return await render_template("dutyAdd.html",FORM=form,SECTIONNAME="Duties")
+        return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties")
     elif request.method == 'POST':
         name         = (await request.form)['Name']
         description  = (await request.form)['Description']
@@ -49,8 +49,8 @@ async def add():
                         s.add(duty)
                         s.commit()
             except Exception as e:
-                return await render_template("dutyAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE=str(e))
-            return await render_template("dutyAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE="Success")
+                return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE=str(e))
+            return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE="Success")
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Duties")
 
