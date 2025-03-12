@@ -2,8 +2,8 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
-from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
+from model import db,DivisionTable
+from forms import AddDivisionForm,RemoveDivisionForm,EditDivisionForm
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
 
@@ -12,7 +12,7 @@ async def divisions():
     divisions = list()
     with db.bind.Session() as s:
         with s.begin():
-            divisions = s.query(select(DivisionTable.Nickname).distinct(DivisionTable.Nickname).subquery()).all()
+            divisions = s.query(select(DivisionTable.Name).distinct(DivisionTable.Name).subquery()).all()
     if len(divisions) > 0:
         return await render_template("divisions.html",divisions=divisions,SECTIONNAME="Divisions")
     else:
@@ -26,7 +26,7 @@ async def division(division):
 async def add():
     form   = AddDivisionForm()
     if request.method == 'GET':
-        return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew")
+        return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
         name        = (await request.form)['Name']
         description = (await request.form)['Description']

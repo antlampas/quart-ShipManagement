@@ -55,13 +55,21 @@ class CrewMemberTable(db.Model):
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRankTable"
+    id:         Mapped[int] = mapped_column(primary_key=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str] = mapped_column(ForeignKey("Rank.Name"))
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDutyTable"
+    id:         Mapped[int] = mapped_column(primary_key=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str] = mapped_column(ForeignKey("Duty.Name"))
+
+class CrewMemberDivisionTable(db.Model):
+    __tablename__ = "CrewMemberDivisionTable"
+    id:         Mapped[int] = mapped_column(primary_key=True)
+    CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
+    Division:   Mapped[str] = mapped_column(ForeignKey("Division.Name"))
 
 class TaskTable(db.Model):
     __tablename__ = "Task"
