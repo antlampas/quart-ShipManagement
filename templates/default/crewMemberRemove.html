@@ -1,4 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<form method="POST" action="/crew/remove/{{ FORM.Nickname.data }}">
+    {{ FORM.csrf_token }}
+    {{ FORM.Nickname.label }} {{ FORM.Nickname() }}<br />
+    <input type="submit" value="Remove">
+</form>
 {% endblock%}
