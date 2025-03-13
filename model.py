@@ -23,10 +23,10 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    FirstName: Mapped[int]                = mapped_column(primary_key=True)
-    LastName:  Mapped[str]                = mapped_column(primary_key=True)
-    Nickname:  Mapped[str]                = mapped_column(primary_key=True)
-    CrewMember: Mapped["CrewMemberTable"] = relationship()
+    FirstName:  Mapped[int]                = mapped_column(primary_key=True)
+    LastName:   Mapped[str]                = mapped_column(primary_key=True)
+    Nickname:   Mapped[str]                = mapped_column(primary_key=True)
+    CrewMember: Mapped["CrewMemberTable"]  = relationship()
 
 class DutyTable(db.Model):
     __tablename__ = "Duty"
@@ -150,3 +150,27 @@ class MemberMissionLogEntryTable(db.Model):
     Grade:      Mapped[str]
 
 db.create_all()
+
+def selectCrew(member=""):
+    if member == "":
+        return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname).subquery()
+    else:
+        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member)
+
+def selectRank(rank=""):
+    if rank == "":
+        return select(RankTable).subquery()
+    else:
+        return select(RankTable).where(RankTable.Name=rank).subquery()
+
+def selectDuties(duty=""):
+    if duty == "":
+        return select(DutyTable).subquery()
+    else:
+        return select(DutyTable).where(DutyTable.Name=duty).subquery()
+
+def selectDivision(division=""):
+    if division == "":
+        return select(DivisionTable).subquery()
+    else:
+        return select(DivisionTable).where(DivisionTable.Name=duty).subquery()
