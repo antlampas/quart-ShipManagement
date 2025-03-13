@@ -76,15 +76,15 @@ class RemoveRankForm(QuartForm):
     Name = SelectMultipleField('Rank')
 
 class AddDutyForm(QuartForm):
-    Name        = StringField('Task')
+    Name        = StringField('Duty')
     Description = StringField('Description')
 
 class EditDutyForm(QuartForm):
-    Name        = StringField('Task')
+    Name        = StringField('Duty')
     Description = StringField('Description')
 
 class RemoveDutyForm(QuartForm):
-    Name = SelectMultipleField('Rank')
+    Name = SelectMultipleField('Duty')
 
 class AddDivisionForm(QuartForm):
     Name        = StringField('Division')
