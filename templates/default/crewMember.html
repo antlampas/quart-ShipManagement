@@ -3,9 +3,11 @@
 {% block content %}
 {% if crewMember is defined %}
 {% if (crewMember is iterable) and (crewMember is not string) and (crewMember is not mapping) %}
+<li>
 {% for i in crewMember %}
-<p>{{ i }}</p>
+<ul><a href="/crew/member/{ i[0] }">{{ i[0] }}</a></ul>
 {% endfor %}
+</li>
 {% else %}
 <p>{{ crewMember }}</p>
 {% endif %}
