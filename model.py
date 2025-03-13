@@ -23,9 +23,10 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    FirstName: Mapped[int] = mapped_column(primary_key=True)
-    LastName:  Mapped[str] = mapped_column(primary_key=True)
-    Nickname:  Mapped[str] = mapped_column(primary_key=True)
+    FirstName: Mapped[int]                = mapped_column(primary_key=True)
+    LastName:  Mapped[str]                = mapped_column(primary_key=True)
+    Nickname:  Mapped[str]                = mapped_column(primary_key=True)
+    CrewMember: Mapped["CrewMemberTable"] = relationship()
 
 class DutyTable(db.Model):
     __tablename__ = "Duty"
@@ -44,26 +45,33 @@ class DivisionTable(db.Model):
 
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
-    Serial:   Mapped[str] = mapped_column(primary_key=True)
-    Nickname: Mapped[str] = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
+    Serial:                   Mapped[str]                             = mapped_column(primary_key=True)
+    Nickname:                 Mapped[str]                             = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
+    PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship()
+    Rank:                     Mapped["CrewMemberRankTable"]           = relationship()
+    Division:                 Mapped["CrewMemberDivisionTable"]       = relationship()
+    Duties:                   Mapped[list["CrewMemberDutyTable"]]     = relationship()
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRank"
-    id:         Mapped[int] = mapped_column(primary_key=True)
-    CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
-    Rank:       Mapped[str] = mapped_column(ForeignKey("Rank.Name"))
+    id:         Mapped[int]               = mapped_column(primary_key=True)
+    CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
+    Rank:       Mapped[str]               = mapped_column(ForeignKey("Rank.Name"))
+    Member:     Mapped["CrewMemberTable"] = relationship()
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
-    id:         Mapped[int] = mapped_column(primary_key=True)
-    CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
-    Duty:       Mapped[str] = mapped_column(ForeignKey("Duty.Name"))
+    id:         Mapped[int]               = mapped_column(primary_key=True)
+    CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
+    Duty:       Mapped[str]               = mapped_column(ForeignKey("Duty.Name"))
+    Member:     Mapped["CrewMemberTable"] = relationship()
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
-    id:         Mapped[int] = mapped_column(primary_key=True)
-    CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
-    Division:   Mapped[str] = mapped_column(ForeignKey("Division.Name"))
+    id:         Mapped[int]               = mapped_column(primary_key=True)
+    CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
+    Division:   Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
+    Member:     Mapped["CrewMemberTable"] = relationship()
 
 class TaskTable(db.Model):
     __tablename__ = "Task"
@@ -142,11 +150,3 @@ class MemberMissionLogEntryTable(db.Model):
     Grade:      Mapped[str]
 
 db.create_all()
-
-PersonalBaseInformationsTable.CrewMember = relationship(CrewMemberTable,order_by=PersonalBaseInformationsTable.Nickname)
-DutyTable.CrewMember                     = relationship(CrewMemberTable,order_by=DutyTable.Name)
-RankTable.CrewMember                     = relationship(CrewMemberTable,order_by=RankTable.Name)
-DutyTable.memberdutylogentry             = relationship(MemberDutyLogEntryTable,order_by=DutyTable.Name)
-CrewMemberTable.memberdutylogentry       = relationship(MemberDutyLogEntryTable,order_by=CrewMemberTable.Nickname)
-RankTable.memberranklogEntry             = relationship(MemberRankLogEntryTable,order_by=RankTable.Name)
-CrewMemberTable.memberranklogEntry       = relationship(MemberRankLogEntryTable,order_by=CrewMemberTable.Nickname)
