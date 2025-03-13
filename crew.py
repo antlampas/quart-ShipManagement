@@ -45,7 +45,8 @@ async def member(member):
     crewMemberQuery = list()
     with db.bind.Session() as s:
         with s.begin():
-            crewMemberQuery = s.query(select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable).where(CrewMemberTable.Nickname==member).subquery()).one()
+            #TODO: fix this query
+            crewMemberQuery = s.scalar(select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member).subquery()).one()
     if len(crewMember) > 0:
         crewMember = CrewMember(FirstName=crewMemberQuery[0],LastName=crewMemberQuery[1],Nickname=crewMemberQuery[2],Rank=crewMemberQuery[3],Division=crewMemberQuery[4],Duties=crewMemberQuery[5])
         return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
@@ -81,9 +82,9 @@ async def add():
 
         personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
         crewMember               = CrewMemberTable(Nickname=nickname)
-        crewMemberRank           = CrewMemberRankTable(Nickname=nickname,Rank=rank)
-        crewMemberDuties         = CrewMemberDutyTable(Nickname=nickname,Duties=duties)
-        crewMemberDivision       = CrewMemberDivisionTable(Nickname=nickname,Division=division)
+        crewMemberRank           = CrewMemberRankTable(CrewMember=nickname,Rank=rank)
+        crewMemberDuties         = CrewMemberDutyTable(CrewMember=nickname,Duty=duties)
+        crewMemberDivision       = CrewMemberDivisionTable(CrewMember=nickname,Division=division)
 
         if form.validate_on_submit():
             try:

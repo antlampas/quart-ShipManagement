@@ -45,7 +45,7 @@ class DivisionTable(db.Model):
 
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
-    Serial:                   Mapped[str]                             = mapped_column(primary_key=True)
+    Serial:                   Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
     Nickname:                 Mapped[str]                             = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
     PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship()
     Rank:                     Mapped["CrewMemberRankTable"]           = relationship()
@@ -54,21 +54,21 @@ class CrewMemberTable(db.Model):
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRank"
-    id:         Mapped[int]               = mapped_column(primary_key=True)
+    id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str]               = mapped_column(ForeignKey("Rank.Name"))
     Member:     Mapped["CrewMemberTable"] = relationship()
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
-    id:         Mapped[int]               = mapped_column(primary_key=True)
+    id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str]               = mapped_column(ForeignKey("Duty.Name"))
     Member:     Mapped["CrewMemberTable"] = relationship()
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
-    id:         Mapped[int]               = mapped_column(primary_key=True)
+    id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Division:   Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
     Member:     Mapped["CrewMemberTable"] = relationship()
@@ -94,13 +94,13 @@ class MissionBaseInformationTable(db.Model):
 
 class MissionTable(db.Model):
     __tablename__ = "Mission"
-    Id:   Mapped[int] = mapped_column(primary_key=True)
+    id:   Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     Name: Mapped[str] = mapped_column(ForeignKey("MissionBaseInformation.Name"))
     Task: Mapped[str] = mapped_column(ForeignKey("Task.Name"))
 
 class MemberDutyLogEntryTable(db.Model):
     __tablename__ = "MemberDutyLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str] = mapped_column(ForeignKey("Duty.Name"))
     Period:     Mapped[int]
@@ -109,13 +109,13 @@ class MemberDutyLogEntryTable(db.Model):
 
 class MemberOnboardLogEntryTable(db.Model):
     __tablename__ = "MemberOnboardLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Period:     Mapped[int]
 
 class MemberRankLogEntryTable(db.Model):
     __tablename__ = "MemberRankLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str] = mapped_column(ForeignKey("Rank.Name"))
     Period:     Mapped[int]
@@ -124,7 +124,7 @@ class MemberRankLogEntryTable(db.Model):
 
 class MemberDivisionLogEntryTable(db.Model):
     __tablename__ = "MemberDivisionLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Division:   Mapped[str] = mapped_column(ForeignKey("Division.Name"))
     Period:     Mapped[int]
@@ -133,7 +133,7 @@ class MemberDivisionLogEntryTable(db.Model):
 
 class MemberTaskLogEntryTable(db.Model):
     __tablename__ = "MemberTaskLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Task:       Mapped[str] = mapped_column(ForeignKey("Task.Name"))
     Period:     Mapped[int]
@@ -142,7 +142,7 @@ class MemberTaskLogEntryTable(db.Model):
 
 class MemberMissionLogEntryTable(db.Model):
     __tablename__ = "MemberMissionLogEntry"
-    Id:         Mapped[int] = mapped_column(primary_key=True)
+    id:         Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Mission:    Mapped[str] = mapped_column(ForeignKey("Mission.Name"))
     Period:     Mapped[int]
