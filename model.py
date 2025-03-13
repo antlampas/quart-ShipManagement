@@ -25,7 +25,7 @@ class Base(DeclarativeBase):
     pass
 
 class PersonalBaseInformationsTable(db.Model):
-    __tablename__ = "Personaldb.ModelInformations"
+    __tablename__ = "PersonalBaseInformations"
     FirstName: Mapped[int] = mapped_column(primary_key=True)
     LastName:  Mapped[str] = mapped_column(primary_key=True)
     Nickname:  Mapped[str] = mapped_column(primary_key=True)
@@ -51,19 +51,19 @@ class CrewMemberTable(db.Model):
     Nickname: Mapped[str] = mapped_column(ForeignKey("Personaldb.ModelInformations.Nickname"))
 
 class CrewMemberRankTable(db.Model):
-    __tablename__ = "CreMemberRankTable"
+    __tablename__ = "CreMemberRank"
     id:         Mapped[int] = mapped_column(primary_key=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str] = mapped_column(ForeignKey("Rank.Name"))
 
 class CrewMemberDutyTable(db.Model):
-    __tablename__ = "CrewMemberDutyTable"
+    __tablename__ = "CrewMemberDuty"
     id:         Mapped[int] = mapped_column(primary_key=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str] = mapped_column(ForeignKey("Duty.Name"))
 
 class CrewMemberDivisionTable(db.Model):
-    __tablename__ = "CrewMemberDivisionTable"
+    __tablename__ = "CrewMemberDivision"
     id:         Mapped[int] = mapped_column(primary_key=True)
     CrewMember: Mapped[str] = mapped_column(ForeignKey("CrewMember.Nickname"))
     Division:   Mapped[str] = mapped_column(ForeignKey("Division.Name"))
@@ -79,7 +79,7 @@ class TaskTable(db.Model):
     Status:           Mapped[str]
 
 class MissionBaseInformationTable(db.Model):
-    __tablename__ = "Missiondb.ModelInformation"
+    __tablename__ = "MissionBaseInformation"
     Name:             Mapped[str] = mapped_column(primary_key=True)
     Description:      Mapped[str]
     RequiredDuration: Mapped[str]
