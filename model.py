@@ -21,9 +21,6 @@ db = QuartSQLAlchemy(
     )
 )
 
-class Base(DeclarativeBase):
-    pass
-
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
     FirstName: Mapped[int] = mapped_column(primary_key=True)
@@ -48,7 +45,7 @@ class DivisionTable(db.Model):
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
     Serial:   Mapped[str] = mapped_column(primary_key=True)
-    Nickname: Mapped[str] = mapped_column(ForeignKey("Personaldb.ModelInformations.Nickname"))
+    Nickname: Mapped[str] = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRank"
@@ -90,7 +87,7 @@ class MissionBaseInformationTable(db.Model):
 class MissionTable(db.Model):
     __tablename__ = "Mission"
     Id:   Mapped[int] = mapped_column(primary_key=True)
-    Name: Mapped[str] = mapped_column(ForeignKey("Missiondb.ModelInformation.Name"))
+    Name: Mapped[str] = mapped_column(ForeignKey("MissionBaseInformation.Name"))
     Task: Mapped[str] = mapped_column(ForeignKey("Task.Name"))
 
 class MemberDutyLogEntryTable(db.Model):
