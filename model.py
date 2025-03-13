@@ -143,9 +143,9 @@ class MemberMissionLogEntryTable(db.Model):
 
 db.create_all()
 
-PersonalBaseInformationsTable.crewmember = relationship(CrewMemberTable,order_by=PersonalBaseInformationsTable.Nickname)
-DutyTable.crewmember                     = relationship(CrewMemberTable,order_by=DutyTable.Name)
-RankTable.crewmember                     = relationship(CrewMemberTable,order_by=RankTable.Name)
+PersonalBaseInformationsTable.CrewMember = relationship(CrewMemberTable,order_by=PersonalBaseInformationsTable.Nickname)
+DutyTable.CrewMember                     = relationship(CrewMemberTable,order_by=DutyTable.Name)
+RankTable.CrewMember                     = relationship(CrewMemberTable,order_by=RankTable.Name)
 DutyTable.memberdutylogentry             = relationship(MemberDutyLogEntryTable,order_by=DutyTable.Name)
 CrewMemberTable.memberdutylogentry       = relationship(MemberDutyLogEntryTable,order_by=CrewMemberTable.Nickname)
 RankTable.memberranklogEntry             = relationship(MemberRankLogEntryTable,order_by=RankTable.Name)
