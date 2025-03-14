@@ -1,6 +1,6 @@
 from config                     import Config
 from sqlalchemy.orm             import Mapped, mapped_column,DeclarativeBase,relationship
-from sqlalchemy                 import ForeignKey
+from sqlalchemy                 import ForeignKey,select
 from quart_sqlalchemy           import SQLAlchemyConfig
 from quart_sqlalchemy.framework import QuartSQLAlchemy
 
@@ -153,24 +153,48 @@ db.create_all()
 
 def selectCrew(member=""):
     if member == "":
-        return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname).subquery()
+        return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname)
     else:
-        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member)
+        members = ""
+        for i in member:
+            members = members + ' OR ' + i
+        members = members.strip(' OR ')
+        members = '\"' + members + '\"'
+        print(members)
+        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==members)
 
 def selectRank(rank=""):
     if rank == "":
-        return select(RankTable).subquery()
+        return select(RankTable)
     else:
-        return select(RankTable).where(RankTable.Name=rank).subquery()
+        ranks = ""
+        for i in rank:
+            ranks = ranks + ' OR ' + i
+        ranks = ranks.strip(' OR ')
+        ranks = '\"' + ranks + '\"'
+        print(ranks)
+        return select(RankTable).where(RankTable.Name==ranks)
 
 def selectDuties(duty=""):
+    print(divisions)
     if duty == "":
-        return select(DutyTable).subquery()
+        return select(DutyTable)
     else:
-        return select(DutyTable).where(DutyTable.Name=duty).subquery()
+        duties = ""
+        for i in duty:
+            duties = duties + ' OR ' + i
+        duties = duties.strip(' OR ')
+        duties = '\"' + duties + '\"'
+        return select(DutyTable).where(DutyTable.Name==duties)
 
 def selectDivision(division=""):
     if division == "":
-        return select(DivisionTable).subquery()
+        return select(DivisionTable)
     else:
-        return select(DivisionTable).where(DivisionTable.Name=duty).subquery()
+        divisions = ""
+        for i in division:
+            divisions = divisions + ' OR ' + i
+        divisions = divisions.strip(' OR ')
+        divisions = '\"' + divisions + '\"'
+        print(divisions)
+        return select(DivisionTable).where(DivisionTable.Name==divisions)

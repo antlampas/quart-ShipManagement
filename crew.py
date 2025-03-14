@@ -2,8 +2,8 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,DivisionTable,CrewMemberRankTable,CrewMemberDutyTable,CrewMemberDivisionTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
-from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm,selectCrew,selectRank,selectDuties,selectDivision
+from model import db,PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,DivisionTable,CrewMemberRankTable,CrewMemberDutyTable,CrewMemberDivisionTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable,selectCrew,selectRank,selectDuties,selectDivision
+from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
 
@@ -24,7 +24,7 @@ async def member(member):
     try:
         with db.bind.Session() as s:
             with s.begin():
-                crewMember = s.execute(selectCrew(member)).order_by(CrewMemberTable.Nickname)).one()
+                crewMember = s.scalar(selectCrew(member).order_by(CrewMemberTable.Nickname)).one()
     except Exception as e:
         return await render_template("crewMember.html",crewMember=str("No crew member found with that name"),SECTIONNAME="Crew")
     return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")

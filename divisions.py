@@ -1,9 +1,11 @@
-from quart          import Blueprint,current_app,render_template,request
+from quart          import Blueprint,current_app,render_template,request,redirect
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,DivisionTable
-from forms import AddDivisionForm,RemoveDivisionForm,EditDivisionForm
+from time           import sleep
+
+from model          import db,DivisionTable,selectDivision
+from forms          import AddDivisionForm,RemoveDivisionForm,EditDivisionForm
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
 
@@ -45,19 +47,31 @@ async def add():
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Divisions")
 
-@divisions_blueprint.route("/remove/<division>",methods=["GET","POST"])
-async def remove(division):
-    form = RemoveDivisionrForm()
+@divisions_blueprint.route("/remove",methods=["GET","POST"])
+async def remove():
+    form = RemoveDivisionForm()
+    divisions = list()
     if request.method == 'GET':
+        try:
+            with db.bind.Session() as s:
+                with s.begin():
+                    divisions = s.scalars(selectDivision()).all()
+        except Exception as e:
+            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+        form.Name.choices = [(d.Name,d.Name) for d in divisions]
         return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions")
     elif request.method == 'POST':
-        if form.validate_on_submit():
+        if await form.validate_on_submit():
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        d = s.query(selectDivision(division)).one()
-                        s.delete(d)
-                        s.commit()
+                        d = s.scalars(selectDivision(division)).all()
+                        for i in d:
+                            s.delete(i)
+                            s.flush()
+            except Exception as e:
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+            return await redirect('/divisions/remove')
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Division")
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
