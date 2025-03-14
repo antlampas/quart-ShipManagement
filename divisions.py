@@ -62,27 +62,25 @@ async def remove():
         return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions")
     elif request.method == 'POST':
         if form.validate_on_submit():
-            #TODO: check this
-            division = (await request.form)['Name']
+            division = (await request.form).getlist('Name')
             try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        d = s.scalar(selectDivision(division)).all()
-                        for i in d:
-                            s.delete(i)
+                for i in division:
+                    with db.bind.Session() as s:
+                        with s.begin():
+                            d = s.scalar(selectDivision(i))
+                            s.delete(d)
                             s.commit()
-                            divisions = s.scalars(selectDivision()).all()
             except Exception as e:
-                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="1: "+str(e))
             form = RemoveDivisionForm()
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        d = s.scalars(selectDivision(division)).all()
+                        d = s.scalars(selectDivision()).all()
                         for i in d:
                             divisions = s.scalars(selectDivision()).all()
             except Exception as e:
-                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="2: "+str(e))
             form.Name.choices = [(d.Name,d.Name) for d in divisions]
             return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="Success")
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Division")

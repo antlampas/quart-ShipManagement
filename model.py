@@ -188,14 +188,8 @@ def selectDuties(duty=""):
         return select(DutyTable).where(DutyTable.Name==duties)
 
 def selectDivision(division=""):
-    #TODO: check this
     if division == "":
         return select(DivisionTable)
     else:
-        divisions = ""
-        for i in division:
-            divisions = divisions + ' OR ' + i
-        divisions = divisions.strip(' OR ')
-        divisions = '\"' + divisions + '\"'
-        print(divisions)
-        return select(DivisionTable).where(DivisionTable.Name==divisions)
+
+        return select(DivisionTable).where(DivisionTable.Name==division)
