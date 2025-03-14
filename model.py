@@ -188,6 +188,7 @@ def selectDuties(duty=""):
         return select(DutyTable).where(DutyTable.Name==duties)
 
 def selectDivision(division=""):
+    #TODO: check this
     if division == "":
         return select(DivisionTable)
     else:

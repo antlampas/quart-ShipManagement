@@ -61,17 +61,30 @@ async def remove():
         form.Name.choices = [(d.Name,d.Name) for d in divisions]
         return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions")
     elif request.method == 'POST':
-        if await form.validate_on_submit():
+        if form.validate_on_submit():
+            #TODO: check this
+            division = (await request.form)['Name']
+            try:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        d = s.scalar(selectDivision(division)).all()
+                        for i in d:
+                            s.delete(i)
+                            s.commit()
+                            divisions = s.scalars(selectDivision()).all()
+            except Exception as e:
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+            form = RemoveDivisionForm()
             try:
                 with db.bind.Session() as s:
                     with s.begin():
                         d = s.scalars(selectDivision(division)).all()
                         for i in d:
-                            s.delete(i)
-                            s.flush()
+                            divisions = s.scalars(selectDivision()).all()
             except Exception as e:
                 return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
-            return await redirect('/divisions/remove')
+            form.Name.choices = [(d.Name,d.Name) for d in divisions]
+            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="Success")
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Division")
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
