@@ -26,7 +26,7 @@ async def member(member):
     try:
         with db.bind.Session() as s:
             with s.begin():
-                crewMember = s.scalar(selectCrew(member).order_by(CrewMemberTable.Nickname)).one()
+                crewMember = s.scalar(selectCrew(member))
     except Exception as e:
         return await render_template("crewMember.html",crewMember=str("No crew member found with that name"),SECTIONNAME="Crew")
     return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
@@ -137,6 +137,7 @@ async def edit(member):
         form.Rank.data      = crewMemberDB.Rank
         form.Division.data  = crewMemberDB.Division
         form.Duties.data    = crewMemberDB.Duties
+
         return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
         firstname = (await request.form)['FirstName']
@@ -162,8 +163,8 @@ async def edit(member):
                         s.edit(crewMemberDuties)
                         s.edit(crewMemberDivision)
                         s.commit()
-            except:
-                return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Exception!")
+            except Exception as e:
+                return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))
             return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Success")
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
