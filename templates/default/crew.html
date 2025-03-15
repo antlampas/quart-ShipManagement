@@ -5,7 +5,7 @@
 {% if (crew is iterable) and (crew is not string) and (crew is not mapping) %}
 <li>
     {% for i in crew %}
-    <ul><a href="/crew/member/{ i[0] }">{{ i[0] }}</a></ul>
+    <ul><a href="/crew/member/{{ i }}">{{ i }}</a></ul>
     {% endfor%}
 </li>
 {% else %}

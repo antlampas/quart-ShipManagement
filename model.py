@@ -155,41 +155,22 @@ def selectCrew(member=""):
     if member == "":
         return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname)
     else:
-        members = ""
-        for i in member:
-            members = members + ' OR ' + i
-        members = members.strip(' OR ')
-        members = '\"' + members + '\"'
-        print(members)
-        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==members)
+        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member)
 
 def selectRank(rank=""):
     if rank == "":
         return select(RankTable)
     else:
-        ranks = ""
-        for i in rank:
-            ranks = ranks + ' OR ' + i
-        ranks = ranks.strip(' OR ')
-        ranks = '\"' + ranks + '\"'
-        print(ranks)
-        return select(RankTable).where(RankTable.Name==ranks)
+        return select(RankTable).where(RankTable.Name==rank)
 
 def selectDuties(duty=""):
-    print(divisions)
     if duty == "":
         return select(DutyTable)
     else:
-        duties = ""
-        for i in duty:
-            duties = duties + ' OR ' + i
-        duties = duties.strip(' OR ')
-        duties = '\"' + duties + '\"'
-        return select(DutyTable).where(DutyTable.Name==duties)
+        return select(DutyTable).where(DutyTable.Name==duty)
 
 def selectDivision(division=""):
     if division == "":
         return select(DivisionTable)
     else:
-
         return select(DivisionTable).where(DivisionTable.Name==division)
