@@ -22,13 +22,20 @@ async def divisions():
 
 @divisions_blueprint.route("/division/<division>",methods=["GET"])
 async def division(division):
-    return "Implement!"
+    divisionData = DivisionTable()
+    try:
+        with db.bind.Session() as s:
+            with s.begin():
+                divisionData = s.scalar(selectDivision(division))
+    except Exception as e:
+        return await render_template("division.html",division=str("No division found with that name"),SECTIONNAME="Division")
+    return await render_template("division.html",division=divisionData,SECTIONNAME="Division")
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     form = AddDivisionForm()
     if request.method == 'GET':
-        return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Crew")
+        return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Division")
     elif request.method == 'POST':
         name        = (await request.form)['Name']
         description = (await request.form)['Description']
@@ -87,4 +94,28 @@ async def remove():
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
 async def edit(division):
-    return "Implement!"
+    form = EditDivisionForm()
+    if request.method == 'GET':
+        with db.bind.Session() as s:
+            with s.begin():
+                divisionDB = s.scalar(selectDivision(member)).one()
+        form.Name.data        = divisionDB.Name
+        form.Description.data = divisionDB.Description
+        return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division")
+    elif request.method == 'POST':
+        name        = (await request.form)['Name']
+        description = (await request.form)['Description']
+
+        division = DivisionTable(Name=name,Description=description)
+
+        if form.validate_on_submit():
+            try:
+                with db.bind.Session() as s:
+                    with s.begin():
+                        s.edit(division)
+                        s.commit()
+            except Exception as e:
+                return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division",MESSAGE=str(e))
+            return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division",MESSAGE="Success")
+    else:
+        return await render_template("error.html",error="Invalid method",SECTIONNAME="Division")

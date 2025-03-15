@@ -163,7 +163,7 @@ def selectRank(rank=""):
     else:
         return select(RankTable).where(RankTable.Name==rank)
 
-def selectDuties(duty=""):
+def selectDuty(duty=""):
     if duty == "":
         return select(DutyTable)
     else:

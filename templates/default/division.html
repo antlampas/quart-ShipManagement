@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if division is defined %}
+<p><span>Division:</span> <span>{{ division.Name }}</span></p>
+<p><span>Description:</span> <span>{{ division.Description }}</span></p>
+{% endif %}
+{% endblock%}

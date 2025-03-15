@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from model import db
 from model import PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,DivisionTable,CrewMemberRankTable,CrewMemberDutyTable,CrewMemberDivisionTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
-from model import selectCrew,selectRank,selectDuties,selectDivision
+from model import selectCrew,selectRank,selectDuty,selectDivision
 from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
@@ -42,7 +42,7 @@ async def add():
             with db.bind.Session() as s:
                 with s.begin():
                     ranks     = s.scalars(selectRank()).all()
-                    duties    = s.scalars(selectDuties()).all()
+                    duties    = s.scalars(selectDuty()).all()
                     divisions = s.scalars(selectDivision()).all()
         except Exception as e:
                 return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE="1: "+str(e))

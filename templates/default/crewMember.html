@@ -2,14 +2,12 @@
 
 {% block content %}
 {% if crewMember is defined %}
-{% if (crewMember is iterable) and (crewMember is not string) and (crewMember is not mapping) %}
-<li>
-{% for i in crewMember %}
-<ul><a href="/crew/member/{ i[0] }">{{ i[0] }}</a></ul>
-{% endfor %}
-</li>
-{% else %}
-<p>{{ crewMember }}</p>
-{% endif %}
+<p><span>First Name:</span> <span>{{ crewMember.FirstName }}</span></p>
+<p><span>Last Name:</span> <span>{{ crewMember.LastName }}</span></p>
+<p><span>Nick Name:</span> <span>{{ crewMember.Nickname }}</span></p>
+<p><span>Serial:</span> <span>{{ crewMember.Serial }}</span></p>
+<p><span>Rank:</span> <span>{{ crewMember.Rank }}</span></p>
+<p><span>Division:</span> <span>{{ crewMember.Division }}</span></p>
+<p><span>Duties:</span> <span>{{ crewMember.Duties }}</span></p>
 {% endif %}
 {% endblock%}
