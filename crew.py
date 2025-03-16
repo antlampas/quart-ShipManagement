@@ -28,7 +28,7 @@ async def member(member):
             with s.begin():
                 crewMember = s.scalar(selectCrew(member))
     except Exception as e:
-        return await render_template("crewMember.html",crewMember=str("No crew member found with that name"),SECTIONNAME="Crew")
+        return await render_template("crewMember.html",crewMember=str(e),SECTIONNAME="Crew")
     return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
 
 @crew_blueprint.route("/add",methods=["GET","POST"])
@@ -80,7 +80,7 @@ async def add():
                             s.commit()
             except Exception as e:
                 return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE="2: "+str(e))
-            return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Success")
+            return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE='Success')
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
