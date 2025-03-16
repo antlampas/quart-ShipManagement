@@ -26,7 +26,7 @@ class PersonalBaseInformationsTable(db.Model):
     FirstName:  Mapped[int]                = mapped_column(primary_key=True)
     LastName:   Mapped[str]                = mapped_column(primary_key=True)
     Nickname:   Mapped[str]                = mapped_column(primary_key=True)
-    CrewMember: Mapped["CrewMemberTable"]  = relationship()
+    CrewMember: Mapped["CrewMemberTable"]  = relationship(back_populates="")
 
 class DutyTable(db.Model):
     __tablename__ = "Duty"
@@ -47,31 +47,31 @@ class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
     Serial:                   Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
     Nickname:                 Mapped[str]                             = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
-    PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship()
-    Rank:                     Mapped["CrewMemberRankTable"]           = relationship()
-    Division:                 Mapped["CrewMemberDivisionTable"]       = relationship()
-    Duties:                   Mapped[list["CrewMemberDutyTable"]]     = relationship()
+    PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship(back_populates="Nickname")
+    Rank:                     Mapped["CrewMemberRankTable"]           = relationship(back_populates="Name")
+    Division:                 Mapped["CrewMemberDivisionTable"]       = relationship(back_populates="Name")
+    Duties:                   Mapped[list["CrewMemberDutyTable"]]     = relationship(back_populates="Name")
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRank"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str]               = mapped_column(ForeignKey("Rank.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship()
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str]               = mapped_column(ForeignKey("Duty.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship()
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Division:   Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship()
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
 
 class TaskTable(db.Model):
     __tablename__ = "Task"
@@ -155,22 +155,26 @@ def selectCrew(member=""):
     if member == "":
         return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname)
     else:
-        return select(CrewMemberTable.Nickname,PersonalBaseInformationsTable.FirstName,PersonalBaseInformationsTable.LastName,CrewMemberRankTable.Rank,CrewMemberDutyTable.Duty,CrewMemberDivisionTable.Division).distinct(CrewMemberTable.Nickname).where(CrewMemberTable.Nickname==member)
+        where_clause = f"CrewMember.Name='{member}'"
+        return select(CrewMemberTable).where(where_clause)
 
 def selectRank(rank=""):
     if rank == "":
         return select(RankTable)
     else:
-        return select(RankTable).where(RankTable.Name==rank)
+        where_clause = f"Rank.Name='{rank}'"
+        return select(RankTable).where(where_clause)
 
 def selectDuty(duty=""):
     if duty == "":
         return select(DutyTable)
     else:
-        return select(DutyTable).where(DutyTable.Name==duty)
+        where_clause = f"Duty.Name='{duty}'"
+        return select(DutyTable).where(where_clause)
 
 def selectDivision(division=""):
     if division == "":
         return select(DivisionTable)
     else:
-        return select(DivisionTable).where(DivisionTable.Name==division)
+        where_clause = f"Division.Name='{division}''"
+        return select(DivisionTable).where(where_clause)
