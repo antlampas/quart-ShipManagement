@@ -26,7 +26,7 @@ class PersonalBaseInformationsTable(db.Model):
     FirstName:  Mapped[int]                = mapped_column(primary_key=True)
     LastName:   Mapped[str]                = mapped_column(primary_key=True)
     Nickname:   Mapped[str]                = mapped_column(primary_key=True)
-    CrewMember: Mapped["CrewMemberTable"]  = relationship(back_populates="")
+    CrewMember: Mapped["CrewMemberTable"]  = relationship(back_populates="PersonalBaseInformations")
 
 class DutyTable(db.Model):
     __tablename__ = "Duty"
