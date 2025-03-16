@@ -47,31 +47,31 @@ class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
     Serial:                   Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
     Nickname:                 Mapped[str]                             = mapped_column(ForeignKey("PersonalBaseInformations.Nickname"))
-    PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship(back_populates="Nickname")
-    Rank:                     Mapped["CrewMemberRankTable"]           = relationship(back_populates="Name")
-    Division:                 Mapped["CrewMemberDivisionTable"]       = relationship(back_populates="Name")
-    Duties:                   Mapped[list["CrewMemberDutyTable"]]     = relationship(back_populates="Name")
+    PersonalBaseInformations: Mapped["PersonalBaseInformationsTable"] = relationship(back_populates="CrewMember")
+    Rank:                     Mapped["CrewMemberRankTable"]           = relationship(back_populates="Member")
+    Division:                 Mapped["CrewMemberDivisionTable"]       = relationship(back_populates="Member")
+    Duties:                   Mapped[list["CrewMemberDutyTable"]]     = relationship(back_populates="Member")
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CreMemberRank"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Rank:       Mapped[str]               = mapped_column(ForeignKey("Rank.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Rank")
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Duty:       Mapped[str]               = mapped_column(ForeignKey("Duty.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Duties")
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
     id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     CrewMember: Mapped[str]               = mapped_column(ForeignKey("CrewMember.Nickname"))
     Division:   Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
-    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Nickname")
+    Member:     Mapped["CrewMemberTable"] = relationship(back_populates="Division")
 
 class TaskTable(db.Model):
     __tablename__ = "Task"
@@ -155,7 +155,7 @@ def selectCrew(member=""):
     if member == "":
         return select(CrewMemberTable.Nickname).distinct(CrewMemberTable.Nickname)
     else:
-        where_clause = f"CrewMember.Name='{member}'"
+        where_clause = f"CrewMember.Nickname='{member}'"
         return select(CrewMemberTable).where(where_clause)
 
 def selectRank(rank=""):
