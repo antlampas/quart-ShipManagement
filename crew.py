@@ -2,9 +2,11 @@ from quart          import Blueprint,current_app,render_template,request
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
+from time  import sleep
+
 from model import db
 from model import PersonalBaseInformationsTable,CrewMemberTable,RankTable,DutyTable,DivisionTable,CrewMemberRankTable,CrewMemberDutyTable,CrewMemberDivisionTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
-from model import selectCrew,selectRank,selectDuty,selectDivision
+from model import selectPerson,selectCrew,selectRank,selectDuty,selectDivision
 from forms import AddCrewMemberForm,RemoveCrewMemberForm,EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
@@ -26,7 +28,7 @@ async def member(member):
     try:
         with db.bind.Session() as s:
             with s.begin():
-                crewMember = s.scalar(selectCrew(member))
+                crewMember = s.execute(selectCrew(member)).all()
     except Exception as e:
         return await render_template("crewMember.html",crewMember=str(e),SECTIONNAME="Crew")
     return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
@@ -55,32 +57,46 @@ async def add():
         lastname  = (await request.form)['LastName']
         nickname  = (await request.form)['Nickname']
         rank      = (await request.form)['Rank']
-        duties    = (await request.form).getlist('duties')
+        duties    = (await request.form).getlist('Duties')
         division  = (await request.form)['Division']
 
         personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
-        crewMember               = CrewMemberTable(Nickname=nickname)
-        crewMemberRank           = CrewMemberRankTable(CrewMember=nickname,Rank=rank)
-        crewMemberDivision       = CrewMemberDivisionTable(CrewMember=nickname,Division=division)
+
+        person     = PersonalBaseInformationsTable()
+        crewMember = CrewMemberTable()
 
         if form.validate_on_submit():
             try:
                 with db.bind.Session() as s:
                     with s.begin():
                         s.add(personalBaseInformations)
+                        s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        person     = s.scalar(selectPerson(nickname))
+                        crewMember = CrewMemberTable(PersonalBaseInformationsId=person.Id)
                         s.add(crewMember)
+                        s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        person             = s.scalar(selectPerson(nickname))
+                        crewMember         = s.scalar(select(CrewMemberTable).where(CrewMemberTable.PersonalBaseInformationsId==person.Id))
+                        crewMemberRank     = CrewMemberRankTable(MemberSerial=crewMember.Serial,RankName=rank)
+                        crewMemberDivision = CrewMemberDivisionTable(MemberSerial=crewMember.Serial,DivisionName=division)
                         s.add(crewMemberRank)
                         s.add(crewMemberDivision)
                         s.commit()
                 for duty in duties:
-                    crewMemberDuty = CrewMemberDutyTable(CrewMember=nickname,Duty=duty)
                     with db.bind.Session() as s:
                         with s.begin():
-                            s.add(crewMemberDuties)
+                            person         = s.scalar(selectPerson(nickname))
+                            crewMember     = s.scalar(select(CrewMemberTable).where(CrewMemberTable.PersonalBaseInformationsId==person.Id))
+                            crewMemberDuty = CrewMemberDutyTable(MemberSerial=crewMember.Serial,DutyName=duty)
+                            s.add(crewMemberDuty)
                             s.commit()
             except Exception as e:
                 return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE="2: "+str(e))
-            return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",MESSAGE='Success')
+            return await render_template("crewMemberAdd.html",FORM=form,DUTIES=duties,SECTIONNAME="Crew",MESSAGE='Success')
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 

@@ -2,7 +2,7 @@ class Config:
     DEBUG          = False
     TESTING        = False
     SECRET_KEY     = 'secret'
-    DATABASEURL    = "sqlite:///"
+    DATABASEURL    = "sqlite:///db.sqlite"
     SHIPNAME       = ""
     REGISTRYNUMBER = ""
 

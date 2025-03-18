@@ -2,12 +2,15 @@
 
 {% block content %}
 {% if crewMember is defined %}
-<p><span>First Name:</span> <span>{{ crewMember.FirstName }}</span></p>
-<p><span>Last Name:</span> <span>{{ crewMember.LastName }}</span></p>
-<p><span>Nick Name:</span> <span>{{ crewMember.Nickname }}</span></p>
-<p><span>Serial:</span> <span>{{ crewMember.Serial }}</span></p>
-<p><span>Rank:</span> <span>{{ crewMember.Rank }}</span></p>
-<p><span>Division:</span> <span>{{ crewMember.Division }}</span></p>
-<p><span>Duties:</span> <span>{{ crewMember.Duties }}</span></p>
+<p><span>First Name:</span> <span>{{ crewMember[0].FirstName }}</span></p>
+<p><span>Last Name:</span> <span>{{ crewMember[0].LastName }}</span></p>
+<p><span>Nick Name:</span> <span>{{ crewMember[0].Nickname }}</span></p>
+<p><span>Serial:</span> <span>{{ crewMember[0].Serial }}</span></p>
+<p><span>Rank:</span> <span>{{ crewMember[0].Rank }}</span></p>
+<p><span>Division:</span> <span>{{ crewMember[0].Division }}</span></p>
+<p><span>Duties:</span> {% for i in crewMember %} <span>{{ i.Duty }}</span>&nbsp;{% endfor %}</p>
+<br />
+<br />
+<p>{{ crewMember }}</p>
 {% endif %}
 {% endblock%}
