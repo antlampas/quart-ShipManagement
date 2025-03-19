@@ -23,9 +23,9 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    CrewMember: Mapped["CrewMemberTable"]  = relationship()
-    Id:         Mapped[int]                = mapped_column(primary_key=True,autoincrement=True)
-    Nickname:   Mapped[str]                = mapped_column(unique=True)
+    CrewMember: Mapped["CrewMemberTable"] = relationship()
+    Id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
+    Nickname:   Mapped[str]               = mapped_column(unique=True)
     FirstName:  Mapped[int]
     LastName:   Mapped[str]
 
