@@ -16,7 +16,7 @@ async def crew():
     crew = list()
     with db.bind.Session() as s:
         with s.begin():
-            crew = s.scalars(selectCrew()).all()
+            crew = s.execute(selectCrew()).all()
     if len(crew) > 0:
         return await render_template("crew.html",crew=crew,SECTIONNAME="Crew")
     else:
@@ -140,45 +140,86 @@ async def remove(member):
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def edit(member):
-    #TODO: Fix this function
-    form = EditCrewMemberForm()
+    form         = EditCrewMemberForm()
     crewMemberDB = CrewMemberTable()
+    ranks        = []
+    duties       = []
+    divisions    = []
     if request.method == 'GET':
         with db.bind.Session() as s:
             with s.begin():
-                crewMemberDB = s.scalar(selectCrew(member)).one()
-        form.FirstName.data = crewMemberDB.FirstName
-        form.LastName.data  = crewMemberDB.LastName
-        form.Nickname.data  = crewMemberDB.Nickname
-        form.Rank.data      = crewMemberDB.Rank
-        form.Division.data  = crewMemberDB.Division
-        form.Duties.data    = crewMemberDB.Duties
+                crewMemberDB = s.execute(selectCrew(member)).all()
+                ranks        = s.scalars(selectRank()).all()
+                duties       = s.scalars(selectDuty()).all()
+                divisions    = s.scalars(selectDivision()).all()
+        form.FirstName.data   = crewMemberDB[0].FirstName
+        form.LastName.data    = crewMemberDB[0].LastName
+        form.Nickname.data    = crewMemberDB[0].Nickname
+        form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+        form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+        form.Division.choices = [(d.Name,d.Name) for d in divisions]
+        form.Rank.default     = crewMemberDB[0].Rank
+        form.Division.default = crewMemberDB[0].Division
+        form.Duties.default   = [d.Duty for d in crewMemberDB]
 
         return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
-        firstname = (await request.form)['FirstName']
-        lastname  = (await request.form)['LastName']
-        nickname  = (await request.form)['Nickname']
-        rank      = (await request.form)['Rank']
-        duties    = (await request.form)['Duties']
-        member  = (await request.form)['Division']
-
-        personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
-        crewMember               = CrewMemberTable(Nickname=nickname)
-        crewMemberRank           = CrewMemberRankTable(CrewMember=nickname,Rank=rank)
-        crewMemberDuties         = CrewMemberDutyTable(CrewMember=nickname,Duty=duties)
-        crewMemberDivision       = CrewMemberDivisionTable(CrewMember=nickname,Division=member)
+        firstname    = (await request.form)['FirstName']
+        lastname     = (await request.form)['LastName']
+        nickname     = (await request.form)['Nickname']
+        rank         = (await request.form)['Rank']
+        duties       = (await request.form).getlist('Duties')
+        division     = (await request.form)['Division']
+        memberSerial = 0
+        personId     = 0
 
         if form.validate_on_submit():
+            #TODO: Fix from here
             try:
                 with db.bind.Session() as s:
                     with s.begin():
+                        memberSerial = (s.execute(selectCrew(nickname)).all())[0].Serial
+                with db.bind.Session() as s:
+                    with s.begin():
+                        personId = (s.scalar(selectPerson(nickname))).Id
+                with db.bind.Session() as s:
+                    with s.begin():
+                        personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,LastName=lastname,Nickname=nickname)
                         s.edit(personalBaseInformations)
+                        s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        crewMember = CrewMemberTable(PersonalBaseInformationsId=personId)
                         s.edit(crewMember)
+                        s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        crewMemberRank     = CrewMemberRankTable(MemberSerial=memberSerial,Rank=rank)
+                        crewMemberDivision = CrewMemberDivisionTable(MemberSerial=memberSerial,Division=division)
                         s.edit(crewMemberRank)
-                        s.edit(crewMemberDuties)
                         s.edit(crewMemberDivision)
                         s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        for duty in duties:
+                            crewMemberDuty = CrewMemberDutyTable(MemberSerial=memberSerial,Duty=duty)
+                            s.edit(crewMemberDuty)
+                            s.commit()
+                with db.bind.Session() as s:
+                    with s.begin():
+                        crewMemberDB = s.execute(selectCrew(member)).all()
+                        ranks        = s.scalars(selectRank()).all()
+                        duties       = s.scalars(selectDuty()).all()
+                        divisions    = s.scalars(selectDivision()).all()
+                form.FirstName.data   = crewMemberDB[0].FirstName
+                form.LastName.data    = crewMemberDB[0].LastName
+                form.Nickname.data    = crewMemberDB[0].Nickname
+                form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
+                form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+                form.Division.choices = [(d.Name,d.Name) for d in divisions]
+                form.Rank.default     = crewMemberDB[0].Rank
+                form.Division.default = crewMemberDB[0].Division
+                form.Duties.default   = [d.Duty for d in crewMemberDB]
             except Exception as e:
                 return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE=str(e))
             return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew",MESSAGE="Success")

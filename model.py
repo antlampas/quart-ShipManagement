@@ -173,6 +173,7 @@ def selectCrew(member=""):
         return select(PersonalBaseInformationsTable.FirstName.label('FirstName'),
                         PersonalBaseInformationsTable.LastName.label('LastName'),
                         PersonalBaseInformationsTable.Nickname.label('Nickname'),
+                        CrewMemberTable.Serial.label('Serial'),
                         CrewMemberRankTable.RankName.label('Rank'),
                         CrewMemberDutyTable.DutyName.label('Duty'),
                         CrewMemberDivisionTable.DivisionName.label('Division')
