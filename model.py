@@ -158,6 +158,37 @@ class MemberMissionLogEntryTable(db.Model):
 
 db.create_all()
 
+def selectCrew(member=""):
+    if member == "":
+        return select(
+                        PersonalBaseInformationsTable.Nickname
+                    ).distinct(
+                        PersonalBaseInformationsTable.Nickname
+                    )
+    else:
+        where_clause = f"PersonalBaseInformations.Nickname='{member}'"
+        return select(
+            PersonalBaseInformationsTable.FirstName.label('FirstName'),
+            PersonalBaseInformationsTable.LastName.label('LastName'),
+            PersonalBaseInformationsTable.Nickname.label('Nickname'),
+            CrewMemberTable.Serial.label('Serial'),
+            CrewMemberRankTable.RankName.label('Rank'),
+            CrewMemberDutyTable.DutyName.label('Duty'),
+            CrewMemberDivisionTable.DivisionName.label('Division')
+        ).join(
+            CrewMemberTable,
+            PersonalBaseInformationsTable.Id == CrewMemberTable.PersonalBaseInformationsId
+        ).join(
+            CrewMemberRankTable,
+            CrewMemberTable.Serial == CrewMemberRankTable.MemberSerial
+        ).join(
+            CrewMemberDutyTable,
+            CrewMemberTable.Serial == CrewMemberDutyTable.MemberSerial
+        ).join(
+            CrewMemberDivisionTable,
+            CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
+        ).where(text(where_clause))
+
 def selectPerson(person=""):
     if person == "":
         return None
@@ -165,26 +196,6 @@ def selectPerson(person=""):
         where_clause = f"PersonalBaseInformations.Nickname='{person}'"
         return select(PersonalBaseInformationsTable).where(text(where_clause))
 
-def selectCrew(member=""):
-    if member == "":
-        return select(PersonalBaseInformationsTable.Nickname).distinct(PersonalBaseInformationsTable.Nickname)
-    else:
-        where_clause = f"PersonalBaseInformations.Nickname='{member}'"
-        return select(PersonalBaseInformationsTable.FirstName.label('FirstName'),
-                        PersonalBaseInformationsTable.LastName.label('LastName'),
-                        PersonalBaseInformationsTable.Nickname.label('Nickname'),
-                        CrewMemberTable.Serial.label('Serial'),
-                        CrewMemberRankTable.RankName.label('Rank'),
-                        CrewMemberDutyTable.DutyName.label('Duty'),
-                        CrewMemberDivisionTable.DivisionName.label('Division')
-                    ).join(CrewMemberTable,PersonalBaseInformationsTable.Id==CrewMemberTable.PersonalBaseInformationsId)\
-                    .join(CrewMemberRankTable,CrewMemberTable.Serial==CrewMemberRankTable.MemberSerial)\
-                    .join(RankTable,CrewMemberRankTable.RankName==RankTable.Name)\
-                    .join(CrewMemberDutyTable,CrewMemberTable.Serial==CrewMemberDutyTable.MemberSerial)\
-                    .join(DutyTable,CrewMemberDutyTable.DutyName==DutyTable.Name)\
-                    .join(CrewMemberDivisionTable,CrewMemberTable.Serial==CrewMemberDivisionTable.MemberSerial)\
-                    .join(DivisionTable,CrewMemberDivisionTable.DivisionName==DivisionTable.Name)\
-                    .where(text(where_clause))
 
 def selectRank(rank=""):
     if rank == "":
