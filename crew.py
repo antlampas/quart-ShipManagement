@@ -157,6 +157,7 @@ async def add():
 
 @crew_blueprint.route("/remove/<member>",methods=["GET","POST"])
 async def remove(member):
+    #TODO: Check and test this function
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
@@ -257,7 +258,8 @@ async def edit(member):
 
         return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
-        if form.validate_on_submit(): #TODO: Fixme
+        #TODO: FIX ME!!!!
+        if form.validate_on_submit():
             firstname      = (await request.form)['FirstName']
             lastname       = (await request.form)['LastName']
             nickname       = (await request.form)['Nickname']
