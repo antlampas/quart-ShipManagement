@@ -223,7 +223,6 @@ async def edit(member):
         try:
             with db.bind.Session() as s:
                 with s.begin():
-                    s.expire_all()
                     crewMember               = s.execute(selectCrew(member)).all()
                     ranks                    = s.scalars(selectRank()).all()
                     duties                   = s.scalars(selectDuty()).all()
@@ -274,7 +273,6 @@ async def edit(member):
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        s.expire_all()
                         crewMember               = s.execute(selectCrew(member)).all()
                         ranks                    = s.scalars(selectRank()).all()
                         duties                   = s.scalars(selectDuty()).all()
@@ -283,13 +281,13 @@ async def edit(member):
                         personId                 = (s.scalar(selectPerson(nickname))).Id
                         memberSerial             = (s.execute(selectCrew(member)).first())[3]
                         personalBaseInformations = s.query(PersonalBaseInformationsTable)\
-                                                    .filter_by(Id=personId).first()
+                                                    .filter_by(Id=personId).update({'FirstName':firstname,'LastName':lastname,'Nickname':nickname})
                         crewMember               = s.query(CrewMemberTable)\
                                                     .filter_by(Serial=memberSerial).first()
                         crewMemberRank           = s.query(CrewMemberRankTable)\
-                                                    .filter_by(MemberSerial=memberSerial).first()
+                                                    .filter_by(MemberSerial=memberSerial).update({'RankName': rank})
                         crewMemberDivision       = s.query(CrewMemberDivisionTable)\
-                                                    .filter_by(MemberSerial=memberSerial).first()
+                                                    .filter_by(MemberSerial=memberSerial).update({'DivisionName': division})
                         crewMemberDuties         = s.query(CrewMemberDutyTable)\
                                                     .filter_by(MemberSerial=memberSerial).all()
             except Exception as e:
@@ -297,72 +295,51 @@ async def edit(member):
                                             FORM=form,
                                             SECTIONNAME="Crew",
                                             MESSAGE="1: "+str(e))
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.expire_all()
-                        if personalBaseInformations.FirstName != firstname:
-                            personalBaseInformations.FirstName = firstname
-                        if personalBaseInformations.LastName != lastname:
-                            personalBaseInformations.LastName = lastname
-                        if crewMemberRank.RankName != rank:
-                            crewMemberRank.RankName = rank
-                        if crewMemberDivision.DivisionName != division:
-                            crewMemberDivision.DivisionName = division
-                        s.commit()
-                        s.flush()
-            except Exception as e:
-                return await render_template("crewMemberEdit.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="2: "+str(e))
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.expire_all()
-                        for newDuty in selectedDuties:
-                            for oldDuty in crewMemberDuties:
-                                if newDuty == oldDuty.DutyName:
-                                    dutyAlreadyPresent = True
-                                    break
-                            if not dutyAlreadyPresent:
-                                newDuty            = CrewMemberDutyTable(MemberSerial=memberSerial,
-                                                                        DutyName=newDuty)
-                                dutyAlreadyPresent = False
-                                s.add(newDuty)
-                        s.commit()
-                        s.flush()
-            except Exception as e:
-                return await render_template("crewMemberEdit.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="3: "+str(e))
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        s.expire_all()
-                        for oldDuty in crewMemberDuties:
+            if len(selectedDuties):
+                try:
+                    with db.bind.Session() as s:
+                        with s.begin():
                             for newDuty in selectedDuties:
-                                if newDuty == oldDuty.DutyName:
-                                    dutyAlreadyPresent = True
-                                    break
-                            if not dutyAlreadyPresent:
-                                removeDuty = s.query(CrewMemberDutyTable)\
-                                            .filter(and_(CrewMemberDutyTable.MemberSerial==memberSerial,CrewMemberDutyTable.DutyName==oldDuty.DutyName))\
-                                            .first()
-                                s.delete(removeDuty)
-                            dutyAlreadyPresent = False
-                        s.commit()
-                        s.flush()
-            except Exception as e:
-                return await render_template("crewMemberEdit.html",
+                                for oldDuty in crewMemberDuties:
+                                    if newDuty == oldDuty.DutyName:
+                                        dutyAlreadyPresent = True
+                                        break
+                                if not dutyAlreadyPresent:
+                                    newDuty            = CrewMemberDutyTable(MemberSerial=memberSerial,
+                                                                            DutyName=newDuty)
+                                    s.add(newDuty)
+                                dutyAlreadyPresent = False
+                            s.commit()
+                            s.flush()
+                except Exception as e:
+                    return await render_template("crewMemberEdit.html",
+                                                FORM=form,
+                                                SECTIONNAME="Crew",
+                                                MESSAGE="5: "+str(e))
+                try:
+                    with db.bind.Session() as s:
+                        with s.begin():
+                            for oldDuty in crewMemberDuties:
+                                for newDuty in selectedDuties:
+                                    if newDuty == oldDuty.DutyName:
+                                        dutyAlreadyPresent = True
+                                        break
+                                if not dutyAlreadyPresent:
+                                    removeDuty = s.query(CrewMemberDutyTable)\
+                                                .filter(and_(CrewMemberDutyTable.MemberSerial==memberSerial,
+                                                            CrewMemberDutyTable.DutyName==oldDuty.DutyName))\
+                                                .delete()
+                                dutyAlreadyPresent = False
+                            s.commit()
+                            s.flush()
+                except Exception as e:
+                    return await render_template("crewMemberEdit.html",
                                             FORM=form,
                                             SECTIONNAME="Crew",
-                                            MESSAGE="4: "+str(e))
+                                            MESSAGE="6: "+str(e))
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        s.expire_all()
                         personId                 = (s.scalar(selectPerson(nickname))).Id
                         memberSerial             = (s.execute(selectCrew(member)).first())[3]
                         personalBaseInformations = s.query(PersonalBaseInformationsTable)\
@@ -379,16 +356,16 @@ async def edit(member):
                 return await render_template("crewMemberEdit.html",
                                             FORM=form,
                                             SECTIONNAME="Crew",
-                                            MESSAGE="5: "+str(e))
+                                            MESSAGE="7: "+str(e))
             form.FirstName.data   = personalBaseInformations.FirstName
             form.LastName.data    = personalBaseInformations.LastName
             form.Nickname.data    = personalBaseInformations.Nickname
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
             form.Rank.default     = crewMemberRank.RankName
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
             form.Division.default = crewMemberDivision.DivisionName
+            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
+            form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
             return await render_template("crewMemberEdit.html",
                                        FORM=form,
                                        SECTIONNAME="Crew",
