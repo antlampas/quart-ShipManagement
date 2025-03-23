@@ -1,6 +1,11 @@
 from config                     import Config
-from sqlalchemy.orm             import Mapped, mapped_column,DeclarativeBase,relationship
-from sqlalchemy                 import ForeignKey,select,text
+from sqlalchemy                 import ForeignKey
+from sqlalchemy                 import select
+from sqlalchemy                 import text
+from sqlalchemy.orm             import Mapped
+from sqlalchemy.orm             import mapped_column
+from sqlalchemy.orm             import DeclarativeBase
+from sqlalchemy.orm             import relationship
 from quart_sqlalchemy           import SQLAlchemyConfig
 from quart_sqlalchemy.framework import QuartSQLAlchemy
 
