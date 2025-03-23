@@ -44,7 +44,7 @@ async def crew():
     if len(crew) > 0:
         return await render_template("crew.html",crew=crew,SECTIONNAME="Crew")
     else:
-        return await render_template("crew.html",crew=str("No crew member found"),SECTIONNAME="Crew")
+        return await render_template("error.html",error="No crew member found",SECTIONNAME="Crew")
 
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
@@ -54,9 +54,11 @@ async def member(member):
             with s.begin():
                 crewMember = s.execute(selectCrew(member)).all()
     except Exception as e:
-        return await render_template("crewMember.html",crewMember=str(e),SECTIONNAME="Crew")
-    return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
-
+        return await render_template("error.html",error=str(e),SECTIONNAME="Crew")
+    if crewMember is not None:
+        return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
+    else:
+        return await render_template("error.html",error="No member with that nickname found",SECTIONNAME="Crew")
 @crew_blueprint.route("/add",methods=["GET","POST"])
 async def add():
     form   = AddCrewMemberForm()
@@ -71,8 +73,7 @@ async def add():
                     duties    = s.scalars(selectDuty()).all()
                     divisions = s.scalars(selectDivision()).all()
         except Exception as e:
-                return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",
-                                            MESSAGE="1: "+str(e))
+                return await render_template("error.html",error=str(e),SECTIONNAME="Crew")
         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
         form.Duties.choices   = [(d.Name,d.Name) for d in duties]
         form.Division.choices = [(d.Name,d.Name) for d in divisions]
@@ -131,10 +132,7 @@ async def add():
                             s.commit()
                             s.flush()
             except Exception as e:
-                return await render_template("crewMemberAdd.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="2: "+str(e))
+                return await render_template("error.html",error="1: "+str(e),SECTIONNAME="Crew")
             try:
                 with db.bind.Session() as s:
                     with s.begin():
@@ -142,8 +140,7 @@ async def add():
                         duties    = s.scalars(selectDuty()).all()
                         divisions = s.scalars(selectDivision()).all()
             except Exception as e:
-                    return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME="Crew",
-                                                MESSAGE="1: "+str(e))
+                    return await render_template("error.html",error="2: "+str(e),SECTIONNAME="Crew")
             form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
             form.Duties.choices   = [(d.Name,d.Name) for d in duties]
             form.Division.choices = [(d.Name,d.Name) for d in divisions]
@@ -155,9 +152,8 @@ async def add():
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
-@crew_blueprint.route("/remove/<member>",methods=["GET","POST"])
-async def remove(member):
-    #TODO: Check and test this function
+@crew_blueprint.route("/remove",methods=["GET","POST"])
+async def remove():
     form = RemoveCrewMemberForm()
     crew = list()
     if request.method == 'GET':
@@ -166,41 +162,30 @@ async def remove(member):
                 with s.begin():
                     crew = s.scalars(selectCrew()).all()
         except Exception as e:
-            return await render_template("crewRemove.html",FORM=form,SECTIONNAME="Crew",
-                                        MESSAGE=str(e))
-        form.Name.choices = [(c.Name,c.Name) for c in crew]
-        return await render_template("crewRemove.html",FORM=form,SECTIONNAME="Crew")
+            return await render_template("error.html",error="GET: "+str(e),SECTIONNAME="Crew")
+        form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
+        return await render_template("crewMemberRemove.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
+        members = (await request.form).getlist('Nickname')
         if form.validate_on_submit():
-            member = (await request.form).getlist('Name')
-            try:
-                for i in member:
-                    with db.bind.Session() as s:
-                        with s.begin():
-                            m = s.scalar(selectCrew(i))
-                            s.delete(d)
-                            s.commit()
-                            s.flush()
-            except Exception as e:
-                return await render_template("crewRemove.html",FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="1: "+str(e))
-            form = RemoveCrewMemberForm()
             try:
                 with db.bind.Session() as s:
                     with s.begin():
-                        c = s.scalars(selectCrew()).all()
-                        for i in c:
-                            crew = s.scalars(selectCrew()).all()
+                        for member in members:
+                            personId     = (s.scalar(selectPerson(member))).Id
+                            memberSerial = (s.execute(selectCrew(member)).first())[3]
+                            s.query(CrewMemberDivisionTable).filter_by(MemberSerial=memberSerial).delete()
+                            s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).delete()
+                            s.query(CrewMemberRankTable).filter_by(MemberSerial=memberSerial).delete()
+                            s.query(CrewMemberTable).filter_by(PersonalBaseInformationsId=personId).delete()
+                            s.query(PersonalBaseInformationsTable).filter_by(Nickname=member).delete()
+                        s.commit()
+                        s.flush()
             except Exception as e:
-                return await render_template("crewRemove.html",FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="2: "+str(e))
-            form.Name.choices = [(c.Name,c.Name) for c in crew]
-            return await render_template("crewRemove.html",FORM=form,
-                                        SECTIONNAME="Crew",
-                                        MESSAGE="Success")
-    return await render_template("implement.html",implement="Implement!",SECTIONNAME="Crew")
+                return await render_template("error.html",error="1: "+str(e),SECTIONNAME="Crew")
+        return redirect(url_for('crew.remove'))
+    else:
+        return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 async def edit(member):
@@ -218,8 +203,6 @@ async def edit(member):
     crewMemberDuties         = []
 
     if request.method == 'GET':
-
-
         try:
             with db.bind.Session() as s:
                 with s.begin():
@@ -241,10 +224,7 @@ async def edit(member):
                     crewMemberDuties         = s.query(CrewMemberDutyTable)\
                                                 .filter_by(MemberSerial=memberSerial).all()
         except Exception as e:
-            return await render_template("crewMemberEdit.html",
-                                        FORM=form,
-                                        SECTIONNAME="Crew",
-                                        MESSAGE="GET: "+str(e))
+            return await render_template("error.html",error="GET: "+str(e),SECTIONNAME="Crew")
         form.FirstName.data   = personalBaseInformations.FirstName
         form.LastName.data    = personalBaseInformations.LastName
         form.Nickname.data    = personalBaseInformations.Nickname
@@ -254,10 +234,8 @@ async def edit(member):
         form.Division.default = crewMemberDivision.DivisionName
         form.Duties.choices   = [(d.Name,d.Name) for d in duties]
         form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
-
         return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME="Crew")
     elif request.method == 'POST':
-        #TODO: FIX ME!!!!
         if form.validate_on_submit():
             firstname      = (await request.form)['FirstName']
             lastname       = (await request.form)['LastName']
@@ -278,7 +256,7 @@ async def edit(member):
                         duties                   = s.scalars(selectDuty()).all()
                         divisions                = s.scalars(selectDivision()).all()
 
-                        personId                 = (s.scalar(selectPerson(nickname))).Id
+                        personId                 = (s.scalar(selectPerson(member))).Id
                         memberSerial             = (s.execute(selectCrew(member)).first())[3]
                         personalBaseInformations = s.query(PersonalBaseInformationsTable)\
                                                     .filter_by(Id=personId).update({'FirstName':firstname,'LastName':lastname,'Nickname':nickname})
@@ -291,10 +269,7 @@ async def edit(member):
                         crewMemberDuties         = s.query(CrewMemberDutyTable)\
                                                     .filter_by(MemberSerial=memberSerial).all()
             except Exception as e:
-                return await render_template("crewMemberEdit.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="1: "+str(e))
+                return await render_template("error.html",error="1: "+str(e),SECTIONNAME="Crew")
             if len(selectedDuties):
                 try:
                     with db.bind.Session() as s:
@@ -312,10 +287,7 @@ async def edit(member):
                             s.commit()
                             s.flush()
                 except Exception as e:
-                    return await render_template("crewMemberEdit.html",
-                                                FORM=form,
-                                                SECTIONNAME="Crew",
-                                                MESSAGE="5: "+str(e))
+                    return await render_template("error.html",error="2: "+str(e),SECTIONNAME="Crew")
                 try:
                     with db.bind.Session() as s:
                         with s.begin():
@@ -333,42 +305,7 @@ async def edit(member):
                             s.commit()
                             s.flush()
                 except Exception as e:
-                    return await render_template("crewMemberEdit.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="6: "+str(e))
-            try:
-                with db.bind.Session() as s:
-                    with s.begin():
-                        personId                 = (s.scalar(selectPerson(nickname))).Id
-                        memberSerial             = (s.execute(selectCrew(member)).first())[3]
-                        personalBaseInformations = s.query(PersonalBaseInformationsTable)\
-                                                    .filter(PersonalBaseInformationsTable.Id==personId).first()
-                        crewMember               = s.query(CrewMemberTable)\
-                                                    .filter(CrewMemberTable.Serial==memberSerial).first()
-                        crewMemberRank           = s.query(CrewMemberRankTable)\
-                                                    .filter(CrewMemberRankTable.MemberSerial==memberSerial).first()
-                        crewMemberDivision       = s.query(CrewMemberDivisionTable)\
-                                                    .filter(CrewMemberDivisionTable.MemberSerial==memberSerial).first()
-                        crewMemberDuties         = s.query(CrewMemberDutyTable)\
-                                                    .filter(CrewMemberDutyTable.MemberSerial==memberSerial).all()
-            except Exception as e:
-                return await render_template("crewMemberEdit.html",
-                                            FORM=form,
-                                            SECTIONNAME="Crew",
-                                            MESSAGE="7: "+str(e))
-            form.FirstName.data   = personalBaseInformations.FirstName
-            form.LastName.data    = personalBaseInformations.LastName
-            form.Nickname.data    = personalBaseInformations.Nickname
-            form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
-            form.Rank.default     = crewMemberRank.RankName
-            form.Division.choices = [(d.Name,d.Name) for d in divisions]
-            form.Division.default = crewMemberDivision.DivisionName
-            form.Duties.choices   = [(d.Name,d.Name) for d in duties]
-            form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
-            return await render_template("crewMemberEdit.html",
-                                       FORM=form,
-                                       SECTIONNAME="Crew",
-                                       MESSAGE="Success")
+                    return await render_template("error.html",error="3: "+str(e),SECTIONNAME="Crew")
+            return redirect(url_for('crew.edit',member=personalBaseInformations.Nickname))
     else:
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")

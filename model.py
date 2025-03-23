@@ -23,7 +23,7 @@ db = QuartSQLAlchemy(
 
 class PersonalBaseInformationsTable(db.Model):
     __tablename__ = "PersonalBaseInformations"
-    CrewMember: Mapped["CrewMemberTable"] = relationship()
+    CrewMember: Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
     Id:         Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     Nickname:   Mapped[str]               = mapped_column(unique=True)
     FirstName:  Mapped[int]
@@ -31,52 +31,52 @@ class PersonalBaseInformationsTable(db.Model):
 
 class DutyTable(db.Model):
     __tablename__ = "Duty"
-    CrewMemberDuty: Mapped["CrewMemberDutyTable"] = relationship()
+    CrewMemberDuty: Mapped["CrewMemberDutyTable"] = relationship(cascade='all,delete')
     Name:           Mapped[str]                   = mapped_column(primary_key=True)
     Description:    Mapped[str]
 
 class RankTable(db.Model):
     __tablename__ = "Rank"
-    CrewMemberRank: Mapped["CrewMemberRankTable"] = relationship()
+    CrewMemberRank: Mapped["CrewMemberRankTable"] = relationship(cascade='all,delete')
     Name:           Mapped[str]                   = mapped_column(primary_key=True)
     Description:    Mapped[str]
 
 class DivisionTable(db.Model):
     __tablename__ = "Division"
-    CrewMemberDivision: Mapped["CrewMemberDivisionTable"] = relationship()
+    CrewMemberDivision: Mapped["CrewMemberDivisionTable"] = relationship(cascade='all,delete')
     Name:               Mapped[str]                       = mapped_column(primary_key=True)
     Description:        Mapped[str]
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
-    Member:       Mapped["CrewMemberTable"] = relationship()
-    Rank:         Mapped["RankTable"]       = relationship()
+    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
+    Rank:         Mapped["RankTable"]       = relationship(cascade='all,delete')
     Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     RankName:     Mapped[str]               = mapped_column(ForeignKey("Rank.Name"))
     MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
 
 class CrewMemberDutyTable(db.Model):
     __tablename__ = "CrewMemberDuty"
-    Member:       Mapped["CrewMemberTable"] = relationship()
-    Duty:         Mapped["DutyTable"]       = relationship()
+    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
+    Duty:         Mapped["DutyTable"]       = relationship(cascade='all,delete')
     Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     DutyName:     Mapped[str]               = mapped_column(ForeignKey("Duty.Name"))
     MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
-    Division:     Mapped["DivisionTable"]   = relationship()
-    Member:       Mapped["CrewMemberTable"] = relationship()
+    Division:     Mapped["DivisionTable"]   = relationship(cascade='all,delete')
+    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
     Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     DivisionName: Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
     MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
 
 class CrewMemberTable(db.Model):
     __tablename__ = "CrewMember"
-    PersonalBaseInformations:   Mapped["PersonalBaseInformationsTable"] = relationship()
-    Rank:                       Mapped["CrewMemberRankTable"]           = relationship()
-    Division:                   Mapped["CrewMemberDivisionTable"]       = relationship()
-    Duties:                     Mapped[list["CrewMemberDutyTable"]]     = relationship()
+    PersonalBaseInformations:   Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete')
+    Rank:                       Mapped["CrewMemberRankTable"]           = relationship(cascade='all,delete')
+    Division:                   Mapped["CrewMemberDivisionTable"]       = relationship(cascade='all,delete')
+    Duties:                     Mapped[list["CrewMemberDutyTable"]]     = relationship(cascade='all,delete')
     PersonalBaseInformationsId: Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
     Serial:                     Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
 
@@ -160,11 +160,7 @@ db.create_all()
 
 def selectCrew(member=""):
     if member == "":
-        return select(
-                        PersonalBaseInformationsTable.Nickname
-                    ).distinct(
-                        PersonalBaseInformationsTable.Nickname
-                    )
+        return select(PersonalBaseInformationsTable)
     else:
         where_clause = f"PersonalBaseInformations.Nickname='{member}'"
         return select(
