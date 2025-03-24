@@ -48,9 +48,10 @@ class RankTable(db.Model):
 
 class DivisionTable(db.Model):
     __tablename__ = "Division"
-    CrewMemberDivision: Mapped["CrewMemberDivisionTable"] = relationship(cascade='all,delete')
-    Name:               Mapped[str]                       = mapped_column(primary_key=True)
-    Description:        Mapped[str]
+    CrewMemberDivision:          Mapped["CrewMemberDivisionTable"]          = relationship(cascade='all,delete')
+    CrewMemberSecondaryDivision: Mapped["CrewMemberSecondaryDivisionTable"] = relationship(cascade='all,delete')
+    Name:                        Mapped[str]                                = mapped_column(primary_key=True)
+    Description:                 Mapped[str]
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
@@ -70,6 +71,14 @@ class CrewMemberDutyTable(db.Model):
 
 class CrewMemberDivisionTable(db.Model):
     __tablename__ = "CrewMemberDivision"
+    Division:     Mapped["DivisionTable"]   = relationship(cascade='all,delete')
+    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
+    Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
+    DivisionName: Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
+    MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
+
+class CrewMemberSecondaryDivisionTable(db.Model):
+    __tablename__ = "CrewMemberSecondaryDivision"
     Division:     Mapped["DivisionTable"]   = relationship(cascade='all,delete')
     Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
     Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
