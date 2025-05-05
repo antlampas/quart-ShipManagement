@@ -48,7 +48,7 @@ def create_app(mode='Development'):
 
     @keycloak.after_login()
     async def handle_user_login(auth_token: KeycloakAuthToken):
-        session['auth_token']        = auth_token
+        session['auth_token'] = auth_token
         return redirect(url_for('index.index'))
 
     @app.route("/logout")

@@ -1,16 +1,22 @@
-.sitewrapper{
+.sitewrapper
+{
     width: 800px;
     margin: auto;
     padding: 0;
     border: 0;
 }
-.shipname{
+.shipname
+{
     text-align: center;
 }
-.sectionname{
+.sectionname
+{
     text-align: center;
 }
-.maincontent{
+.maincontent
+.title
+.navigation
+{
     width: 100%;
     margin: 0;
     padding: 0;

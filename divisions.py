@@ -18,6 +18,8 @@ from forms          import EditDivisionForm
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
 
+sectionName = "Divisions"
+
 addDivisionRole    = ""
 removeDivisionRole = ""
 editDivisionRole   = ""
@@ -29,9 +31,9 @@ async def divisions():
         with s.begin():
             divisions = s.scalars(selectDivision()).all()
     if len(divisions) > 0:
-        return await render_template("divisions.html",divisions=divisions,SECTIONNAME="Divisions")
+        return await render_template("divisions.html",divisions=divisions,SECTIONNAME=sectionName)
     else:
-        return await render_template("divisions.html",divisions=str("No divisions found"),SECTIONNAME="Divisions")
+        return await render_template("divisions.html",divisions=str("No divisions found"),SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/division/<division>",methods=["GET"])
 async def division(division):
@@ -41,15 +43,15 @@ async def division(division):
             with s.begin():
                 divisionData = s.scalar(selectDivision(division))
     except Exception as e:
-        return await render_template("division.html",division=str("No division found with that name"),SECTIONNAME="Division")
-    return await render_template("division.html",division=divisionData,SECTIONNAME="Division")
+        return await render_template("division.html",division=str("No division found with that name"),SECTIONNAME=sectionName)
+    return await render_template("division.html",division=divisionData,SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
 @require_role(addDivisionRole)
 async def add():
     form = AddDivisionForm()
     if request.method == 'GET':
-        return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Division")
+        return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName)
     elif request.method == 'POST':
         name        = (await request.form)['Name']
         description = (await request.form)['Description']
@@ -63,10 +65,10 @@ async def add():
                         s.add(division)
                         s.commit()
             except Exception as e:
-                return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
-            return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="Success")
+                return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
+            return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
     else:
-        return await render_template("error.html",error="Invalid method",SECTIONNAME="Divisions")
+        return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(removeDivisionRole)
@@ -79,9 +81,9 @@ async def remove():
                 with s.begin():
                     divisions = s.scalars(selectDivision()).all()
         except Exception as e:
-            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE=str(e))
+            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
         form.Name.choices = [(d.Name,d.Name) for d in divisions]
-        return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions")
+        return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName)
     elif request.method == 'POST':
         if form.validate_on_submit():
             division = (await request.form).getlist('Name')
@@ -93,7 +95,7 @@ async def remove():
                             s.delete(d)
                             s.commit()
             except Exception as e:
-                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="1: "+str(e))
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="1: "+str(e))
             form = RemoveDivisionForm()
             try:
                 with db.bind.Session() as s:
@@ -102,10 +104,10 @@ async def remove():
                         for i in d:
                             divisions = s.scalars(selectDivision()).all()
             except Exception as e:
-                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="2: "+str(e))
+                return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="2: "+str(e))
             form.Name.choices = [(d.Name,d.Name) for d in divisions]
-            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME="Divisions",MESSAGE="Success")
-    return await render_template("implement.html",implement="Implement!",SECTIONNAME="Division")
+            return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
+    return await render_template("implement.html",implement="Implement!",SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
 @require_role(editDivisionRole)
@@ -117,7 +119,7 @@ async def edit(division):
                 divisionDB = s.scalar(selectDivision(member)).one()
         form.Name.data        = divisionDB.Name
         form.Description.data = divisionDB.Description
-        return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division")
+        return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName)
     elif request.method == 'POST':
         name        = (await request.form)['Name']
         description = (await request.form)['Description']
@@ -131,7 +133,7 @@ async def edit(division):
                         s.edit(division)
                         s.commit()
             except Exception as e:
-                return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division",MESSAGE=str(e))
-            return await render_template("divisionEdit.html",FORM=form,SECTIONNAME="Division",MESSAGE="Success")
+                return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
+            return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
     else:
-        return await render_template("error.html",error="Invalid method",SECTIONNAME="Division")
+        return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)

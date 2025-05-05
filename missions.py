@@ -12,6 +12,8 @@ from model import MemberMissionLogEntryTable
 
 missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',template_folder='templates/default')
 
+sectionName = "Missions"
+
 addMissionRole    = ""
 removeMissionRole = ""
 editMissionRole   = ""

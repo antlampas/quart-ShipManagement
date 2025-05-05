@@ -17,6 +17,8 @@ from forms import EditRankForm
 
 ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates/default')
 
+sectionName = "Ranks"
+
 addRankRole    = ""
 removeRankRole = ""
 editRankRole   = ""
@@ -34,7 +36,7 @@ async def rank(rank):
 async def add():
     form = AddRankForm()
     if request.method == 'GET':
-        return await render_template("ranksAdd.html",FORM=form,SECTIONNAME="Rank")
+        return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName)
     elif request.method == 'POST':
         name         = (await request.form)['Name']
         description  = (await request.form)['Description']
@@ -46,10 +48,10 @@ async def add():
                         s.add(rank)
                         s.commit()
             except Exception as e:
-                return await render_template("ranksAdd.html",FORM=form,SECTIONNAME="Ranks",MESSAGE=str(e))
-            return await render_template("ranksAdd.html",FORM=form,SECTIONNAME="Ranks",MESSAGE="Success")
+                return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
+            return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
     else:
-        return await render_template("error.html",error="Invalid method",SECTIONNAME="Ranks")
+        return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @ranks_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(removeRankRole)

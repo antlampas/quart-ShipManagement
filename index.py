@@ -4,8 +4,12 @@ from quart import render_template
 from quart import request
 from quart import session
 
+from jose import jwt
+
 index_blueprint = Blueprint("index",__name__,template_folder='templates/default')
+
+sectionName = "Home Page"
 
 @index_blueprint.route("/")
 async def index():
-    return await render_template("index.html",SECTIONNAME='Home Page')
+    return await render_template("index.html",SECTIONNAME=sectionName)

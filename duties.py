@@ -17,6 +17,8 @@ from forms          import EditDutyForm
 
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
+sectionName = "Duties"
+
 addDutyRole    = ""
 removeDutyRole = ""
 editDutyRole   = ""
@@ -34,7 +36,7 @@ async def duty(duty):
 async def add():
     form = AddDutyForm()
     if request.method == 'GET':
-        return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties")
+        return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName)
     elif request.method == 'POST':
         name         = (await request.form)['Name']
         description  = (await request.form)['Description']
@@ -46,16 +48,16 @@ async def add():
                         s.add(duty)
                         s.commit()
             except Exception as e:
-                return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE=str(e))
-            return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME="Duties",MESSAGE="Success")
+                return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
+            return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
     else:
-        return await render_template("error.html",error="Invalid method",SECTIONNAME="Duties")
+        return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @duties_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(removeDutyRole)
 async def remove():
-    form = RemoveDutiesForm()
-    return await render_template("implement.html",implement="Implement!",SECTIONNAME="Duties")
+    form = RemoveDutyForm()
+    return await render_template("implement.html",implement="Implement!",SECTIONNAME=sectionName)
 
 @duties_blueprint.route("/edit",methods=["GET","POST"])
 @require_role(editDutyRole)

@@ -1,20 +1,29 @@
+from quart import current_app
 from quart import session
-from quart import redirect
-from quart import url_for
 from quart import abort
 
-from jose  import jwt
-import json
+from jose import jwt
 
-def require_role(*roles):
+def require_role(*roles_required):
     def decorator(func):
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
                 token = jwt.get_unverified_claims(session['auth_token']['access_token'])
-                if 'realm_access' in token and 'roles' in token['realm_access'] and set(roles).issubset(token['realm_access']['roles']):
+                if set(roles_required).issubset(token['groups']):
                     return await func(*args, **kwargs)
                 else:
                     abort(403)
+            else:
+                abort(401)
+        wrapper.__name__ = func.__name__
+        return wrapper
+    return decorator
+
+def require_login():
+    def decorator(func):
+        async def wrapper(*args, **kwargs):
+            if 'auth_token' in session:
+                return await func(*args, **kwargs)
             else:
                 abort(401)
         wrapper.__name__ = func.__name__

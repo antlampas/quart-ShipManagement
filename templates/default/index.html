@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>USS {{ config.SHIPNAME }} NCC-{{ config.REGISTRYNUMBER }}</h1>
 <p>Benvenuto sulla USS {{ config.SHIPNAME }}</p>
+{% if not SESSION %}
+<a href="/login">Login</a>
+{% endif %}
+{% if SESSION %}
+<a href="/logout">Logout</a>
+{% endif %}
 {% endblock %}

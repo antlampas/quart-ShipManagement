@@ -9,6 +9,8 @@ from model import MemberTaskLogEntryTable
 
 tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder='templates/default')
 
+sectionName = "Tasks"
+
 addTaskRole    = ""
 removeTaskRole = ""
 editTaskRole   = ""
