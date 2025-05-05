@@ -1,13 +1,26 @@
-from quart          import Blueprint,current_app,render_template,request,redirect
+from quart          import Blueprint
+from quart          import current_app
+from quart          import render_template
+from quart          import request
+from quart          import redirect
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
 from time           import sleep
+from authorization  import require_role
 
-from model          import db,DivisionTable,selectDivision
-from forms          import AddDivisionForm,RemoveDivisionForm,EditDivisionForm
+from model          import db
+from model          import DivisionTable
+from model          import selectDivision
+from forms          import AddDivisionForm
+from forms          import RemoveDivisionForm
+from forms          import EditDivisionForm
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
+
+addDivisionRole    = ""
+removeDivisionRole = ""
+editDivisionRole   = ""
 
 @divisions_blueprint.route("/",methods=["GET"])
 async def divisions():
@@ -32,6 +45,7 @@ async def division(division):
     return await render_template("division.html",division=divisionData,SECTIONNAME="Division")
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
+@require_role(addDivisionRole)
 async def add():
     form = AddDivisionForm()
     if request.method == 'GET':
@@ -55,6 +69,7 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Divisions")
 
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
+@require_role(removeDivisionRole)
 async def remove():
     form = RemoveDivisionForm()
     divisions = list()
@@ -93,6 +108,7 @@ async def remove():
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Division")
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
+@require_role(editDivisionRole)
 async def edit(division):
     form = EditDivisionForm()
     if request.method == 'GET':

@@ -8,32 +8,37 @@ from sqlalchemy     import select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import and_
 
-from time  import sleep
+from time           import sleep
+from authorization  import require_role
 
-from model import db
-from model import PersonalBaseInformationsTable
-from model import CrewMemberTable
-from model import RankTable
-from model import DutyTable
-from model import DivisionTable
-from model import CrewMemberRankTable
-from model import CrewMemberDutyTable
-from model import CrewMemberDivisionTable
-from model import MemberOnboardLogEntryTable
-from model import MemberRankLogEntryTable
-from model import MemberDivisionLogEntryTable
-from model import MemberTaskLogEntryTable
-from model import MemberMissionLogEntryTable
-from model import selectPerson
-from model import selectCrew
-from model import selectRank
-from model import selectDuty
-from model import selectDivision
-from forms import AddCrewMemberForm
-from forms import RemoveCrewMemberForm
-from forms import EditCrewMemberForm
+from model          import db
+from model          import PersonalBaseInformationsTable
+from model          import CrewMemberTable
+from model          import DutyTable
+from model          import RankTable
+from model          import DivisionTable
+from model          import CrewMemberRankTable
+from model          import CrewMemberDutyTable
+from model          import CrewMemberDivisionTable
+from model          import MemberOnboardLogEntryTable
+from model          import MemberRankLogEntryTable
+from model          import MemberDivisionLogEntryTable
+from model          import MemberTaskLogEntryTable
+from model          import MemberMissionLogEntryTable
+from model          import selectPerson
+from model          import selectCrew
+from model          import selectRank
+from model          import selectDuty
+from model          import selectDivision
+from forms          import AddCrewMemberForm
+from forms          import RemoveCrewMemberForm
+from forms          import EditCrewMemberForm
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
+
+addMemberRole    = ""
+removeMemberRole = ""
+editMemberRole   = ""
 
 @crew_blueprint.route("/",methods=["GET"])
 async def crew():
@@ -59,7 +64,9 @@ async def member(member):
         return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME="Crew")
     else:
         return await render_template("error.html",error="No member with that nickname found",SECTIONNAME="Crew")
+
 @crew_blueprint.route("/add",methods=["GET","POST"])
+@require_role(addMemberRole)
 async def add():
     form   = AddCrewMemberForm()
     if request.method == 'GET':
@@ -89,7 +96,6 @@ async def add():
         personalBaseInformations = PersonalBaseInformationsTable(FirstName=firstname,
                                                                 LastName=lastname,
                                                                 Nickname=nickname)
-
         person     = PersonalBaseInformationsTable()
         crewMember = CrewMemberTable()
 
@@ -153,6 +159,7 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
 @crew_blueprint.route("/remove",methods=["GET","POST"])
+@require_role(removeMemberRole)
 async def remove():
     form = RemoveCrewMemberForm()
     crew = list()
@@ -188,6 +195,7 @@ async def remove():
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Crew")
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
+@require_role(editMemberRole)
 async def edit(member):
     form         = EditCrewMemberForm()
     ranks        = []

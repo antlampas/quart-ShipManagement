@@ -1,28 +1,25 @@
-from quart          import Blueprint,current_app,request,render_template
+from quart          import Blueprint
+from quart          import current_app
+from quart          import request
+from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,CrewMemberTable,RankTable
-from forms import AddRankForm,RemoveRankForm,EditRankForm
+from authorization  import require_role
+
+from model import db
+from model import CrewMemberTable
+from model import RankTable
+
+from forms import AddRankForm
+from forms import RemoveRankForm
+from forms import EditRankForm
 
 ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates/default')
 
-class Rank:
-    def __init__(self):
-        self.Name     = ""
-        self.Position = ""
-
-    async def edit(self,Name,Position) -> bool:
-        pass
-
-class RankList:
-    def __init__(self):
-        self.Rank = list()
-
-    async def add(self,rank:Rank) -> bool:
-        pass
-    async def remove(self,rank:Rank) -> bool:
-        pass
+addRankRole    = ""
+removeRankRole = ""
+editRankRole   = ""
 
 @ranks_blueprint.route("/",methods=["GET"])
 async def view():
@@ -33,6 +30,7 @@ async def rank(rank):
     return "Implement!"
 
 @ranks_blueprint.route("/add",methods=["GET","POST"])
+@require_role(addRankRole)
 async def add():
     form = AddRankForm()
     if request.method == 'GET':
@@ -54,9 +52,11 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Ranks")
 
 @ranks_blueprint.route("/remove",methods=["GET","POST"])
+@require_role(removeRankRole)
 async def remove():
     return "Implement!"
 
 @ranks_blueprint.route("/edit",methods=["GET","POST"])
+@require_role(editRankRole)
 async def edit():
     return "Implement!"

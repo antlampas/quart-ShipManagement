@@ -1,29 +1,25 @@
-from quart          import Blueprint,current_app,request,render_template
+from quart          import Blueprint
+from quart          import current_app
+from quart          import request
+from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,CrewMemberTable,DutyTable
-from forms import AddDutyForm,RemoveDutyForm,EditDutyForm
+from authorization  import require_role
+
+from model          import db
+from model          import CrewMemberTable
+from model          import DutyTable
+
+from forms          import AddDutyForm
+from forms          import RemoveDutyForm
+from forms          import EditDutyForm
 
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
-class Duty:
-    def __init__(self):
-        self.name        = ""
-        self.description = ""
-
-    async def edit(self,name,description) -> bool:
-        pass
-
-
-class DutyList:
-    def __init__(self):
-        self.Duty = list()
-
-    async def add(self,duty:Duty) -> bool:
-        pass
-    async def remove(self,duty:Duty) -> bool:
-        pass
+addDutyRole    = ""
+removeDutyRole = ""
+editDutyRole   = ""
 
 @duties_blueprint.route("/",methods=["GET"])
 async def view():
@@ -34,6 +30,7 @@ async def duty(duty):
     return "Implement!"
 
 @duties_blueprint.route("/add",methods=["GET","POST"])
+@require_role(addDutyRole)
 async def add():
     form = AddDutyForm()
     if request.method == 'GET':
@@ -55,10 +52,12 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME="Duties")
 
 @duties_blueprint.route("/remove",methods=["GET","POST"])
+@require_role(removeDutyRole)
 async def remove():
     form = RemoveDutiesForm()
     return await render_template("implement.html",implement="Implement!",SECTIONNAME="Duties")
 
 @duties_blueprint.route("/edit",methods=["GET","POST"])
+@require_role(editDutyRole)
 async def edit():
     return "Implement!"

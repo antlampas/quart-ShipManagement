@@ -1,43 +1,36 @@
-from quart import current_app,Blueprint
+from quart import Blueprint
+from quart import current_app
 
-from model import db,CrewMemberTable,TaskTable,MissionTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
+from authorization  import require_role
+
+from model import db
+from model import CrewMemberTable
+from model import TaskTable
+from model import MissionTable
+from model import MemberTaskLogEntryTable
+from model import MemberMissionLogEntryTable
 
 missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',template_folder='templates/default')
 
-class Mission:
-    def __init__(self):
-        self.Name             = ""
-        self.Description      = ""
-        self.RequiredDuration = ""
-        self.StartedAt        = ""
-        self.EndedAt          = ""
-        self.Tasks            = list()
-        self.Status           = ""
-
-    async def edit(self,mission):
-        pass
-
-class MissionList:
-    def __init__(self):
-        self.Mission = list()
-
-    async def add(mission:Mission):
-        pass
-    async def remove(mission:Mission):
-        pass
+addMissionRole    = ""
+removeMissionRole = ""
+editMissionRole   = ""
 
 @missions_blueprint.route("/mission/<mission>",methods=["GET"])
 async def view(mission):
     return "Implement!"
 
 @missions_blueprint.route("/add",methods=["GET","POST"])
+@require_role(addMissionRole)
 async def add():
     return "Implement!"
 
 @missions_blueprint.route("/remove",methods=["GET","POST"])
+@require_role(removeMissionRole)
 async def remove():
     return "Implement!"
 
 @missions_blueprint.route("/edit",methods=["GET","POST"])
+@require_role(editMissionRole)
 async def edit():
     return "Implement!"

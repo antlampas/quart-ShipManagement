@@ -1,4 +1,4 @@
-from config                     import Config
+from config                     import BaseConfig as Config
 from sqlalchemy                 import ForeignKey
 from sqlalchemy                 import select
 from sqlalchemy                 import text

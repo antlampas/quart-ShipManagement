@@ -1,6 +1,13 @@
-from quart_wtf          import QuartForm,CSRFProtect
-from wtforms            import StringField,PasswordField,SelectField,SelectMultipleField,SubmitField
-from wtforms.validators import DataRequired,Email,EqualTo
+from quart_wtf          import QuartForm
+from quart_wtf          import CSRFProtect
+from wtforms            import StringField
+from wtforms            import PasswordField
+from wtforms            import SelectField
+from wtforms            import SelectMultipleField
+from wtforms            import SubmitField
+from wtforms.validators import DataRequired
+from wtforms.validators import Email
+from wtforms.validators import EqualTo
 from wtforms.widgets    import PasswordInput
 
 class AddCrewMemberForm(QuartForm):

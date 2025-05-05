@@ -1,8 +1,18 @@
-from quart          import Blueprint,current_app
+from quart          import Blueprint
+from quart          import current_app
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db,CrewMemberTable,MemberDutyLogEntryTable,MemberOnboardLogEntryTable,MemberRankLogEntryTable,MemberDivisionLogEntryTable,MemberTaskLogEntryTable,MemberMissionLogEntryTable
+from authorization  import require_role
+
+from model import db
+from model import CrewMemberTable
+from model import MemberDutyLogEntryTable
+from model import MemberOnboardLogEntryTable
+from model import MemberRankLogEntryTable
+from model import MemberDivisionLogEntryTable
+from model import MemberTaskLogEntryTable
+from model import MemberMissionLogEntryTable
 
 crewOnboardLog_blueprint = Blueprint("crewOnboardLog",__name__,url_prefix='/crewOnboardLog',template_folder='templates/default')
 

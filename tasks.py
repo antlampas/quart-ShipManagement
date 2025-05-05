@@ -1,43 +1,33 @@
 from quart import current_app,Blueprint
 
-from model import db,CrewMemberTable,TaskTable,MemberTaskLogEntryTable
+from authorization  import require_role
+
+from model import db
+from model import CrewMemberTable
+from model import TaskTable
+from model import MemberTaskLogEntryTable
 
 tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder='templates/default')
 
-class Task:
-    async def __init__():
-        self.Name             = ""
-        self.Description      = ""
-        self.Objective        = ""
-        self.RequiredDuration = ""
-        self.StartedAt        = ""
-        self.EndedAt          = ""
-        self.Status           = ""
-
-    async def edit(self,name,description,objective,requiredDuration,startedAt,endedAt,status) -> bool:
-        pass
-
-class TaskList:
-    async def __init__():
-        self.Task = list()
-
-    async def add(task:Task) -> bool:
-        pass
-    async def remove(task:Task) -> bool:
-        pass
+addTaskRole    = ""
+removeTaskRole = ""
+editTaskRole   = ""
 
 @tasks_blueprint.route("/task/<task>")
 async def view(task):
     return "Implement!"
 
 @tasks_blueprint.route("/add")
+@require_role(addTaskRole)
 async def add():
     return "Implement!"
 
 @tasks_blueprint.route("/remove")
+@require_role(removeTaskRole)
 async def remove():
     return "Implement!"
 
 @tasks_blueprint.route("/edit")
+@require_role(editTaskRole)
 async def edit():
     return "Implement!"

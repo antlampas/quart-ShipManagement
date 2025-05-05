@@ -1,13 +1,21 @@
-class Config:
-    DEBUG          = False
-    TESTING        = False
-    SECRET_KEY     = 'secret'
-    DATABASEURL    = "sqlite:///db.sqlite"
+class BaseConfig:
+    DATABASEURL                 = ""
+    SESSION_TYPE                = ""
+    OPENID_KEYCLOAK_CONFIG      = {
+                                    "client_id":     "",
+                                    "client_secret": "",
+                                    "configuration": "",
+                                    "check_nonce":   False
+                                }
+
+class ShipConfig:
     SHIPNAME       = ""
     REGISTRYNUMBER = ""
 
-class Development(Config):
-    DEBUG = True
+class Development(BaseConfig,ShipConfig):
+    DEBUG                       = True
+    SECRET_KEY                  = ''
 
-class Production(Config):
-    SECRET_KEY = 'an actually secret key'
+class Production(BaseConfig,ShipConfig):
+    DEBUG                       = False
+    SECRET_KEY                  = ''
