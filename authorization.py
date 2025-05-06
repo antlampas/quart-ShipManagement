@@ -19,13 +19,23 @@ def require_role(*roles_required):
         return wrapper
     return decorator
 
-def require_login():
-    def decorator(func):
-        async def wrapper(*args, **kwargs):
-            if 'auth_token' in session:
-                return await func(*args, **kwargs)
-            else:
-                abort(401)
-        wrapper.__name__ = func.__name__
-        return wrapper
-    return decorator
+def require_login(func):
+    async def wrapper(*args, **kwargs):
+        if 'auth_token' in session:
+            return await func(*args, **kwargs)
+        else:
+            abort(401)
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+def authorize_action(func):
+    async def wrapper(*args,**kwargs):
+        if 'auth_token' in session:
+            #TODO: implement jwt encoding for the request
+            #TODO: implement jwt send
+            #TODO: implement response wait and decode
+            pass
+        else:
+            abort(401)
+    wrapper.__name__ = func.__name__
+    return wrapper

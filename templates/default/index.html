@@ -2,10 +2,4 @@
 
 {% block content %}
 <p>Benvenuto sulla USS {{ config.SHIPNAME }}</p>
-{% if not SESSION %}
-<a href="/login">Login</a>
-{% endif %}
-{% if SESSION %}
-<a href="/logout">Logout</a>
-{% endif %}
 {% endblock %}

@@ -43,7 +43,7 @@ removeMemberRole = ""
 editMemberRole   = ""
 
 @crew_blueprint.route("/",methods=["GET"])
-@require_login()
+@require_login
 async def crew():
     crew = list()
     with db.bind.Session() as s:

@@ -1,2 +1,8 @@
 <a href="/">Home</a>
 <a href="/crew">Crew</a>
+{% if not SESSION %}
+<a href="/login">Login</a>
+{% endif %}
+{% if SESSION %}
+<a href="/logout">Logout</a>
+{% endif %}

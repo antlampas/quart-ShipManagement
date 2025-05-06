@@ -15,7 +15,7 @@ db = QuartSQLAlchemy(
             default=dict(
                 engine=dict(
                     url=Config.DATABASEURL,
-                    echo=True,
+                    echo=False,
                     connect_args=dict(check_same_thread=False),
                 ),
                 session=dict(
