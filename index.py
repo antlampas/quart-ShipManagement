@@ -12,4 +12,7 @@ sectionName = "Home Page"
 
 @index_blueprint.route("/")
 async def index():
-    return await render_template("index.html",SECTIONNAME=sectionName)
+    if 'auth_token' in session:
+        return await render_template("index.html",SECTIONNAME=sectionName,SESSION=session)
+    else:
+        return await render_template("index.html",SECTIONNAME=sectionName)

@@ -44,8 +44,6 @@ def create_app(mode='Development'):
         login_url_keycloak = url_for(keycloak.endpoint_name_login)
         return redirect(login_url_keycloak)
 
-    from jose import jwt
-
     @keycloak.after_login()
     async def handle_user_login(auth_token: KeycloakAuthToken):
         session['auth_token'] = auth_token
