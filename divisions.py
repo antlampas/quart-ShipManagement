@@ -7,7 +7,6 @@ from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
 from time           import sleep
-from authorization  import require_role
 
 from model          import db
 from model          import DivisionTable
@@ -16,15 +15,16 @@ from forms          import AddDivisionForm
 from forms          import RemoveDivisionForm
 from forms          import EditDivisionForm
 
+from authorization  import require_role
+from authorization  import require_login
+from permissions    import DivisionsPermissions
+
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')
 
 sectionName = "Divisions"
 
-addDivisionRole    = ""
-removeDivisionRole = ""
-editDivisionRole   = ""
-
 @divisions_blueprint.route("/",methods=["GET"])
+@require_login
 async def divisions():
     divisions = list()
     with db.bind.Session() as s:
@@ -36,6 +36,7 @@ async def divisions():
         return await render_template("divisions.html",divisions=str("No divisions found"),SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/division/<division>",methods=["GET"])
+@require_login
 async def division(division):
     divisionData = DivisionTable()
     try:
@@ -47,7 +48,7 @@ async def division(division):
     return await render_template("division.html",division=divisionData,SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
-@require_role(addDivisionRole)
+@require_role(DivisionsPermissions.addDivisionRole)
 async def add():
     form = AddDivisionForm()
     if request.method == 'GET':
@@ -71,7 +72,7 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
-@require_role(removeDivisionRole)
+@require_role(DivisionsPermissions.removeDivisionRole)
 async def remove():
     form = RemoveDivisionForm()
     divisions = list()
@@ -110,7 +111,7 @@ async def remove():
     return await render_template("implement.html",implement="Implement!",SECTIONNAME=sectionName)
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
-@require_role(editDivisionRole)
+@require_role(DivisionsPermissions.editDivisionRole)
 async def edit(division):
     form = EditDivisionForm()
     if request.method == 'GET':

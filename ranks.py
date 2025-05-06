@@ -5,8 +5,6 @@ from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from authorization  import require_role
-
 from model import db
 from model import CrewMemberTable
 from model import RankTable
@@ -15,24 +13,21 @@ from forms import AddRankForm
 from forms import RemoveRankForm
 from forms import EditRankForm
 
+from authorization  import require_role
+from authorization  import require_login
+from permissions    import RanksPermissions
+
 ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates/default')
 
 sectionName = "Ranks"
 
-addRankRole    = ""
-removeRankRole = ""
-editRankRole   = ""
-
-@ranks_blueprint.route("/",methods=["GET"])
-async def view():
-    return "Implement!"
-
 @ranks_blueprint.route("/rank/<rank>",methods=["GET"])
+@require_login
 async def rank(rank):
     return "Implement!"
 
 @ranks_blueprint.route("/add",methods=["GET","POST"])
-@require_role(addRankRole)
+@require_role(RanksPermissions.addRankRole)
 async def add():
     form = AddRankForm()
     if request.method == 'GET':
@@ -54,11 +49,11 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @ranks_blueprint.route("/remove",methods=["GET","POST"])
-@require_role(removeRankRole)
+@require_role(RanksPermissions.removeRankRole)
 async def remove():
     return "Implement!"
 
 @ranks_blueprint.route("/edit",methods=["GET","POST"])
-@require_role(editRankRole)
+@require_role(RanksPermissions.editRankRole)
 async def edit():
     return "Implement!"

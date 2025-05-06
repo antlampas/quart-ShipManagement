@@ -3,8 +3,6 @@ from quart          import current_app
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from authorization  import require_role
-
 from model import db
 from model import CrewMemberTable
 from model import MemberDutyLogEntryTable
@@ -13,6 +11,10 @@ from model import MemberRankLogEntryTable
 from model import MemberDivisionLogEntryTable
 from model import MemberTaskLogEntryTable
 from model import MemberMissionLogEntryTable
+
+from authorization  import require_role
+from authorization  import require_login
+from permissions    import CrewOnBoardLogPermissions
 
 crewOnboardLog_blueprint = Blueprint("crewOnboardLog",__name__,url_prefix='/crewOnboardLog',template_folder='templates/default')
 
@@ -64,11 +66,13 @@ class OnboardLog:
         return log
 
 @crewOnboardLog_blueprint.route("/",methods=["GET"])
+@require_login
 async def readLog():
     onboardLog = MemberOnboardLog()
     return render_template("crewOnboardLog.html",log=onboardLog.read())
 
 @crewOnboardLog_blueprint.route("/<member>",methods=["GET"])
+@require_login
 async def readMemberLog(member):
     onboardLog = OnboardLog()
     return render_template("crewOnboardLog.html",log=onboardLog.read())

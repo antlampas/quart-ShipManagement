@@ -5,8 +5,6 @@ from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from authorization  import require_role
-
 from model          import db
 from model          import CrewMemberTable
 from model          import DutyTable
@@ -15,24 +13,21 @@ from forms          import AddDutyForm
 from forms          import RemoveDutyForm
 from forms          import EditDutyForm
 
+from authorization  import require_role
+from authorization  import require_login
+from permissions    import DutiesPermissions
+
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
 sectionName = "Duties"
 
-addDutyRole    = ""
-removeDutyRole = ""
-editDutyRole   = ""
-
-@duties_blueprint.route("/",methods=["GET"])
-async def view():
-    return "Implement!"
-
 @duties_blueprint.route("/duty/<duty>",methods=["GET"])
+@require_login
 async def duty(duty):
     return "Implement!"
 
 @duties_blueprint.route("/add",methods=["GET","POST"])
-@require_role(addDutyRole)
+@require_role(DutiesPermissions.addDutyRole)
 async def add():
     form = AddDutyForm()
     if request.method == 'GET':
@@ -54,12 +49,12 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @duties_blueprint.route("/remove",methods=["GET","POST"])
-@require_role(removeDutyRole)
+@require_role(DutiesPermissions.removeDutyRole)
 async def remove():
     form = RemoveDutyForm()
     return await render_template("implement.html",implement="Implement!",SECTIONNAME=sectionName)
 
 @duties_blueprint.route("/edit",methods=["GET","POST"])
-@require_role(editDutyRole)
+@require_role(DutiesPermissions.editDutyRole)
 async def edit():
     return "Implement!"

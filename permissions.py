@@ -1,20 +1,32 @@
 class CrewPermissions():
-    pass
+    addMemberRole    = "Responabile personale"
+    removeMemberRole = "Responabile personale"
+    editMemberRole   = "Responabile personale"
 
 class CrewOnBoardLogPermissions():
     pass
 
 class DivisionsPermissions():
-    pass
+    addDivisionRole    = "Responsabile divisioni"
+    removeDivisionRole = "Responsabile divisioni"
+    editDivisionRole   = "Responsabile divisioni"
 
-class DutiesPermission():
-    pass
+class DutiesPermissions():
+    addDutyRole    = "Responsabile doveri"
+    removeDutyRole = "Responsabile doveri"
+    editDutyRole   = "Responsabile doveri"
 
 class MissionsPermissions():
-    pass
+    addMissionRole    = "Responsabile missioni"
+    removeMissionRole = "Responsabile missioni"
+    editMissionRole   = "Responsabile missioni"
 
 class RanksPermissions():
-    pass
+    addRankRole    = "Responabile personale"
+    removeRankRole = "Responabile personale"
+    editRankRole   = "Responabile personale"
 
 class TasksPermissions():
-    pass
+    addTaskRole    = "Responsabile compiti"
+    removeTaskRole = "Responsabile compiti"
+    editTaskRole   = "Responsabile compiti"

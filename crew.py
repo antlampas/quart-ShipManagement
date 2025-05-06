@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import and_
 
 from time           import sleep
-from authorization  import require_role,require_login
 
 from model          import db
 from model          import PersonalBaseInformationsTable
@@ -34,13 +33,14 @@ from forms          import AddCrewMemberForm
 from forms          import RemoveCrewMemberForm
 from forms          import EditCrewMemberForm
 
+from authorization  import require_user
+from authorization  import require_role
+from authorization  import require_login
+from permissions    import CrewPermissions
+
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
 
 sectionName = "Crew"
-
-addMemberRole    = ""
-removeMemberRole = ""
-editMemberRole   = ""
 
 @crew_blueprint.route("/",methods=["GET"])
 @require_login
@@ -56,20 +56,21 @@ async def crew():
 
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
-    crewMember = CrewMemberTable()
-    try:
-        with db.bind.Session() as s:
-            with s.begin():
-                crewMember = s.execute(selectCrew(member)).all()
-    except Exception as e:
-        return await render_template("error.html",error=str(e),SECTIONNAME=sectionName)
-    if crewMember is not None:
-        return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME=sectionName)
-    else:
-        return await render_template("error.html",error="No member with that nickname found",SECTIONNAME=sectionName)
+    if require_role(member):
+        crewMember = CrewMemberTable()
+        try:
+            with db.bind.Session() as s:
+                with s.begin():
+                    crewMember = s.execute(selectCrew(member)).one_or_none()
+        except Exception as e:
+            return await render_template("error.html",error=str(e),SECTIONNAME=sectionName)
+        if crewMember is not None:
+            return await render_template("crewMember.html",crewMember=crewMember,SECTIONNAME=sectionName)
+        else:
+            return await render_template("error.html",error="No member with that nickname found",SECTIONNAME=sectionName)
 
 @crew_blueprint.route("/add",methods=["GET","POST"])
-@require_role(addMemberRole)
+@require_role(CrewPermissions.addMemberRole)
 async def add():
     form   = AddCrewMemberForm()
     if request.method == 'GET':
@@ -162,7 +163,7 @@ async def add():
         return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @crew_blueprint.route("/remove",methods=["GET","POST"])
-@require_role(removeMemberRole)
+@require_role(CrewPermissions.removeMemberRole)
 async def remove():
     form = RemoveCrewMemberForm()
     crew = list()
@@ -198,7 +199,7 @@ async def remove():
         return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
-@require_role(editMemberRole)
+@require_role(CrewPermissions.editMemberRole)
 async def edit(member):
     form         = EditCrewMemberForm()
     ranks        = []
