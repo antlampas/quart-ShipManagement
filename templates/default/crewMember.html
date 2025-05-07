@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if crewMember is defined %}
-<p><span>First Name:</span> <span>{{ crewMember[0].FirstName }}</span></p>
-<p><span>Last Name:</span> <span>{{ crewMember[0].LastName }}</span></p>
-<p><span>Nickname:</span> <span>{{ crewMember[0].Nickname }}</span></p>
-<p><span>Serial:</span> <span>{{ crewMember[0].Serial }}</span></p>
-<p><span>Rank:</span> <span>{{ crewMember[0].Rank }}</span></p>
-<p><span>Division:</span> <span>{{ crewMember[0].Division }}</span></p>
-<p><span>Duties:</span> {% for i in crewMember %} <span>{{ i.Duty }}</span>&nbsp;{% endfor %}</p>
+{% if CREWMEMBER is defined %}
+<p><span>First Name:</span> <span>{{ CREWMEMBER.FirstName }}</span></p>
+<p><span>Last Name:</span> <span>{{ CREWMEMBER.LastName }}</span></p>
+<p><span>Nickname:</span> <span>{{ CREWMEMBER.Nickname }}</span></p>
+<p><span>Serial:</span> <span>{{ CREWMEMBER.Serial }}</span></p>
+<p><span>Rank:</span> <span>{{ CREWMEMBER.Rank }}</span></p>
+<p><span>Division:</span> <span>{{ CREWMEMBER.Division }}</span></p>
+<p><span>Duties:</span> {% for i in CREWMEMBER.Duties %} <span>{{ i }}</span>&nbsp;{% endfor %}</p>
+<a href="/crew/edit/{{ CREWMEMBER.Nickname }}">Modifica membro</a>
 {% endif %}
 {% endblock%}

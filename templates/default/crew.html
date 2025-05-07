@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<nav>
+    <a href="/crew/add">Nuovo membro</a>
+    <a href="/crew/remove">Rimuovi membro</a>
+    <a href="/crew/edit">Modifica membro</a>
+</nav>
 {% if crew is defined %}
 {% if (crew is iterable) and (crew is not string) and (crew is not mapping) %}
 {% for i in crew %}

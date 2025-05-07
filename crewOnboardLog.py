@@ -1,20 +1,24 @@
 from quart          import Blueprint
 from quart          import current_app
+from quart          import render_template
 from sqlalchemy     import select
 from sqlalchemy.orm import Session
 
-from model import db
-from model import CrewMemberTable
-from model import MemberDutyLogEntryTable
-from model import MemberOnboardLogEntryTable
-from model import MemberRankLogEntryTable
-from model import MemberDivisionLogEntryTable
-from model import MemberTaskLogEntryTable
-from model import MemberMissionLogEntryTable
+from model          import db
+from model          import CrewMemberTable
+from model          import MemberDutyLogEntryTable
+from model          import MemberOnboardLogEntryTable
+from model          import MemberRankLogEntryTable
+from model          import MemberDivisionLogEntryTable
+from model          import MemberTaskLogEntryTable
+from model          import MemberMissionLogEntryTable
 
 from authorization  import require_role
 from authorization  import require_login
 from permissions    import CrewOnBoardLogPermissions
+from standardReturn import standardReturn
+
+sectionName = "Crew Onboard Log"
 
 crewOnboardLog_blueprint = Blueprint("crewOnboardLog",__name__,url_prefix='/crewOnboardLog',template_folder='templates/default')
 
@@ -69,10 +73,10 @@ class OnboardLog:
 @require_login
 async def readLog():
     onboardLog = MemberOnboardLog()
-    return render_template("crewOnboardLog.html",log=onboardLog.read())
+    return standardReturn("crewOnboardLog.html",SECTIONNAME=sectionName,log=onboardLog.read())
 
 @crewOnboardLog_blueprint.route("/<member>",methods=["GET"])
 @require_login
 async def readMemberLog(member):
     onboardLog = OnboardLog()
-    return render_template("crewOnboardLog.html",log=onboardLog.read())
+    return standardReturn("crewOnboardLog.html",SECTIONNAME=sectionName,log=onboardLog.read())

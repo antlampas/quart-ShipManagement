@@ -10,10 +10,10 @@ def require_role(*requiredRoles):
     def decorator(func):
         async def wrapper(*args, **kwargs):
             if 'auth_token' in session:
-                token = jwt.get_unverified_claims(session['auth_token']['access_token'])
-                userRoles = token['groups']
+                token                 = jwt.get_unverified_claims(session['auth_token']['access_token'])
+                userRoles             = token['groups']
                 numberOfRequiredRoles = len(userRoles)
-                rolesMatched = 0
+                rolesMatched          = 0
                 for requiredRole in requiredRoles:
                     for userRole in userRoles:
                         if requiredRole in userRole:

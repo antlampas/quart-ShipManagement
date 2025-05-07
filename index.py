@@ -6,13 +6,12 @@ from quart import session
 
 from jose import jwt
 
+from standardReturn import standardReturn
+
 index_blueprint = Blueprint("index",__name__,template_folder='templates/default')
 
 sectionName = "Home Page"
 
 @index_blueprint.route("/")
 async def index():
-    if 'auth_token' in session:
-        return await render_template("index.html",SECTIONNAME=sectionName,SESSION=session)
-    else:
-        return await render_template("index.html",SECTIONNAME=sectionName)
+    return await standardReturn("index.html",SECTIONNAME=sectionName)
