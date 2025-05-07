@@ -27,21 +27,21 @@ sectionName = "Divisions"
 @divisions_blueprint.route("/",methods=["GET"])
 @require_login
 async def divisions():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # divisions = list()
     # with db.bind.Session() as s:
     #     with s.begin():
     #         divisions = s.scalars(selectDivision()).all()
     # if len(divisions) > 0:
-    #     return await render_template("divisions.html",divisions=divisions,SECTIONNAME=sectionName)
+    #     return await render_template("divisions.html",divisions=divisions,sectionName)
     # else:
-    #     return await render_template("divisions.html",divisions=str("No divisions found"),SECTIONNAME=sectionName)
+    #     return await render_template("divisions.html",divisions=str("No divisions found"),sectionName)
 
 @divisions_blueprint.route("/division/<division>",methods=["GET"])
 @require_login
 async def division(division):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # divisionData = DivisionTable()
     # try:
@@ -49,17 +49,17 @@ async def division(division):
     #         with s.begin():
     #             divisionData = s.scalar(selectDivision(division))
     # except Exception as e:
-    #     return await render_template("division.html",division=str("No division found with that name"),SECTIONNAME=sectionName)
-    # return await render_template("division.html",division=divisionData,SECTIONNAME=sectionName)
+    #     return await render_template("division.html",division=str("No division found with that name"),sectionName)
+    # return await render_template("division.html",division=divisionData,sectionName)
 
 @divisions_blueprint.route("/add",methods=["GET","POST"])
 @require_role(DivisionsPermissions.addDivisionRole)
 async def add():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # if request.method == 'GET':
     #     form = AddDivisionForm()
-    #     return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("divisionsAdd.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     name        = (await request.form)['Name']
     #     description = (await request.form)['Description']
@@ -73,15 +73,15 @@ async def add():
     #                     s.add(division)
     #                     s.commit()
     #         except Exception as e:
-    #             return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
-    #         return await render_template("divisionsAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
+    #             return await render_template("divisionsAdd.html",FORM=form,sectionName,MESSAGE=str(e))
+    #         return await render_template("divisionsAdd.html",FORM=form,sectionName,MESSAGE="Success")
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)
 
 @divisions_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(DivisionsPermissions.removeDivisionRole)
 async def remove():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form = RemoveDivisionForm()
     # divisions = list()
@@ -91,9 +91,9 @@ async def remove():
     #             with s.begin():
     #                 divisions = s.scalars(selectDivision()).all()
     #     except Exception as e:
-    #         return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
+    #         return await render_template("divisionsRemove.html",FORM=form,sectionName,MESSAGE=str(e))
     #     form.Name.choices = [(d.Name,d.Name) for d in divisions]
-    #     return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("divisionsRemove.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     if form.validate_on_submit():
     #         division = (await request.form).getlist('Name')
@@ -105,7 +105,7 @@ async def remove():
     #                         s.delete(d)
     #                         s.commit()
     #         except Exception as e:
-    #             return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="1: "+str(e))
+    #             return await render_template("divisionsRemove.html",FORM=form,sectionName,MESSAGE="1: "+str(e))
     #         form = RemoveDivisionForm()
     #         try:
     #             with db.bind.Session() as s:
@@ -114,15 +114,15 @@ async def remove():
     #                     for i in d:
     #                         divisions = s.scalars(selectDivision()).all()
     #         except Exception as e:
-    #             return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="2: "+str(e))
+    #             return await render_template("divisionsRemove.html",FORM=form,sectionName,MESSAGE="2: "+str(e))
     #         form.Name.choices = [(d.Name,d.Name) for d in divisions]
-    #         return await render_template("divisionsRemove.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
-    # return await render_template("implement.html",implement="Implement!",SECTIONNAME=sectionName)
+    #         return await render_template("divisionsRemove.html",FORM=form,sectionName,MESSAGE="Success")
+    # return await render_template("implement.html",implement="Implement!",sectionName)
 
 @divisions_blueprint.route("/edit/<division>",methods=["GET","POST"])
 @require_role(DivisionsPermissions.editDivisionRole)
 async def edit(division):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form = EditDivisionForm()
     # if request.method == 'GET':
@@ -131,7 +131,7 @@ async def edit(division):
     #             divisionDB = s.scalar(selectDivision(member)).one()
     #     form.Name.data        = divisionDB.Name
     #     form.Description.data = divisionDB.Description
-    #     return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("divisionEdit.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     name        = (await request.form)['Name']
     #     description = (await request.form)['Description']
@@ -145,7 +145,7 @@ async def edit(division):
     #                     s.edit(division)
     #                     s.commit()
     #         except Exception as e:
-    #             return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
-    #         return await render_template("divisionEdit.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
+    #             return await render_template("divisionEdit.html",FORM=form,sectionName,MESSAGE=str(e))
+    #         return await render_template("divisionEdit.html",FORM=form,sectionName,MESSAGE="Success")
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)

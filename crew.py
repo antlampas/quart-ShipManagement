@@ -74,9 +74,9 @@ async def crew():
         with s.begin():
             crew = s.scalars(selectCrew()).all()
     if len(crew) > 0:
-        return await standardReturn("crew.html",SECTIONNAME=sectionName,crew=crew)
+        return await standardReturn("crew.html",sectionName,crew=crew)
     else:
-        return await standardReturn("error.html",SECTIONNAME=sectionName,error="No crew member found")
+        return await standardReturn("error.html",sectionName,error="No crew member found")
 
 @crew_blueprint.route("/member/<member>",methods=["GET"])
 async def member(member):
@@ -95,7 +95,7 @@ async def member(member):
 @crew_blueprint.route("/add",methods=["GET","POST"])
 @require_role(CrewPermissions.addMemberRole)
 async def add():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form   = AddCrewMemberForm()
     # if request.method == 'GET':
@@ -109,11 +109,11 @@ async def add():
     #                 duties    = s.scalars(selectDuty()).all()
     #                 divisions = s.scalars(selectDivision()).all()
     #     except Exception as e:
-    #             return await render_template("error.html",error=str(e),SECTIONNAME=sectionName)
+    #             return await render_template("error.html",error=str(e),sectionName)
     #     form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
     #     form.Duties.choices   = [(d.Name,d.Name) for d in duties]
     #     form.Division.choices = [(d.Name,d.Name) for d in divisions]
-    #     return await render_template("crewMemberAdd.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("crewMemberAdd.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     firstname = (await request.form)['FirstName']
     #     lastname  = (await request.form)['LastName']
@@ -167,7 +167,7 @@ async def add():
     #                         s.commit()
     #                         s.flush()
     #         except Exception as e:
-    #             return await render_template("error.html",error="1: "+str(e),SECTIONNAME=sectionName)
+    #             return await render_template("error.html",error="1: "+str(e),sectionName)
     #         try:
     #             with db.bind.Session() as s:
     #                 with s.begin():
@@ -175,22 +175,22 @@ async def add():
     #                     duties    = s.scalars(selectDuty()).all()
     #                     divisions = s.scalars(selectDivision()).all()
     #         except Exception as e:
-    #                 return await render_template("error.html",error="2: "+str(e),SECTIONNAME=sectionName)
+    #                 return await render_template("error.html",error="2: "+str(e),sectionName)
     #         form.Rank.choices     = [(r.Name,r.Name) for r in ranks]
     #         form.Duties.choices   = [(d.Name,d.Name) for d in duties]
     #         form.Division.choices = [(d.Name,d.Name) for d in divisions]
     #         return await render_template("crewMemberAdd.html",
     #                                     FORM=form,
     #                                     DUTIES=duties,
-    #                                     SECTIONNAME=sectionName,
+    #                                     sectionName,
     #                                     MESSAGE='Success')
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)
 
 @crew_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(CrewPermissions.removeMemberRole)
 async def remove():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form = RemoveCrewMemberForm()
     # crew = list()
@@ -200,9 +200,9 @@ async def remove():
     #             with s.begin():
     #                 crew = s.scalars(selectCrew()).all()
     #     except Exception as e:
-    #         return await render_template("error.html",error="GET: "+str(e),SECTIONNAME=sectionName)
+    #         return await render_template("error.html",error="GET: "+str(e),sectionName)
     #     form.Nickname.choices = [(c.Nickname,c.Nickname) for c in crew]
-    #     return await render_template("crewMemberRemove.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("crewMemberRemove.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     members = (await request.form).getlist('Nickname')
     #     if form.validate_on_submit():
@@ -220,15 +220,15 @@ async def remove():
     #                     s.commit()
     #                     s.flush()
     #         except Exception as e:
-    #             return await render_template("error.html",error="1: "+str(e),SECTIONNAME=sectionName)
+    #             return await render_template("error.html",error="1: "+str(e),sectionName)
     #     return redirect(url_for('crew.remove'))
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)
 
 @crew_blueprint.route("/edit/<member>",methods=["GET","POST"])
 @require_role(CrewPermissions.editMemberRole)
 async def edit(member):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form         = EditCrewMemberForm()
     # ranks        = []
@@ -265,7 +265,7 @@ async def edit(member):
     #                 crewMemberDuties         = s.query(CrewMemberDutyTable)\
     #                                             .filter_by(MemberSerial=memberSerial).all()
     #     except Exception as e:
-    #         return await render_template("error.html",error="GET: "+str(e),SECTIONNAME=sectionName)
+    #         return await render_template("error.html",error="GET: "+str(e),sectionName)
     #     form.FirstName.data   = personalBaseInformations.FirstName
     #     form.LastName.data    = personalBaseInformations.LastName
     #     form.Nickname.data    = personalBaseInformations.Nickname
@@ -275,7 +275,7 @@ async def edit(member):
     #     form.Division.default = crewMemberDivision.DivisionName
     #     form.Duties.choices   = [(d.Name,d.Name) for d in duties]
     #     form.Duties.default   = [(d.DutyName,d.DutyName) for d in crewMemberDuties]
-    #     return await render_template("crewMemberEdit.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("crewMemberEdit.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     if form.validate_on_submit():
     #         firstname      = (await request.form)['FirstName']
@@ -310,7 +310,7 @@ async def edit(member):
     #                     crewMemberDuties         = s.query(CrewMemberDutyTable)\
     #                                                 .filter_by(MemberSerial=memberSerial).all()
     #         except Exception as e:
-    #             return await render_template("error.html",error="1: "+str(e),SECTIONNAME=sectionName)
+    #             return await render_template("error.html",error="1: "+str(e),sectionName)
     #         if len(selectedDuties):
     #             try:
     #                 with db.bind.Session() as s:
@@ -328,7 +328,7 @@ async def edit(member):
     #                         s.commit()
     #                         s.flush()
     #             except Exception as e:
-    #                 return await render_template("error.html",error="2: "+str(e),SECTIONNAME=sectionName)
+    #                 return await render_template("error.html",error="2: "+str(e),sectionName)
     #             try:
     #                 with db.bind.Session() as s:
     #                     with s.begin():
@@ -346,7 +346,7 @@ async def edit(member):
     #                         s.commit()
     #                         s.flush()
     #             except Exception as e:
-    #                 return await render_template("error.html",error="3: "+str(e),SECTIONNAME=sectionName)
+    #                 return await render_template("error.html",error="3: "+str(e),sectionName)
     #         return redirect(url_for('crew.edit',member=personalBaseInformations.Nickname))
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)

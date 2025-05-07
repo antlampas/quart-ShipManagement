@@ -19,19 +19,19 @@ sectionName = "Tasks"
 @tasks_blueprint.route("/task/<task>")
 @require_login
 async def view(task):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @tasks_blueprint.route("/add")
 @require_role(TasksPermissions.addTaskRole)
 async def add():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @tasks_blueprint.route("/remove")
 @require_role(TasksPermissions.removeTaskRole)
 async def remove():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @tasks_blueprint.route("/edit")
 @require_role(TasksPermissions.editTaskRole)
 async def edit():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")

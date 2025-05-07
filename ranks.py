@@ -25,17 +25,17 @@ sectionName = "Ranks"
 @ranks_blueprint.route("/rank/<rank>",methods=["GET"])
 @require_login
 async def rank(rank):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
 @ranks_blueprint.route("/add",methods=["GET","POST"])
 @require_role(RanksPermissions.addRankRole)
 async def add():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form = AddRankForm()
     # if request.method == 'GET':
-    #     return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("ranksAdd.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     name         = (await request.form)['Name']
     #     description  = (await request.form)['Description']
@@ -47,19 +47,19 @@ async def add():
     #                     s.add(rank)
     #                     s.commit()
     #         except Exception as e:
-    #             return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
-    #         return await render_template("ranksAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
+    #             return await render_template("ranksAdd.html",FORM=form,sectionName,MESSAGE=str(e))
+    #         return await render_template("ranksAdd.html",FORM=form,sectionName,MESSAGE="Success")
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)
 
 @ranks_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(RanksPermissions.removeRankRole)
 async def remove():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
 @ranks_blueprint.route("/edit",methods=["GET","POST"])
 @require_role(RanksPermissions.editRankRole)
 async def edit():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack

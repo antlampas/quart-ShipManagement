@@ -73,10 +73,10 @@ class OnboardLog:
 @require_login
 async def readLog():
     onboardLog = MemberOnboardLog()
-    return standardReturn("crewOnboardLog.html",SECTIONNAME=sectionName,log=onboardLog.read())
+    return standardReturn("crewOnboardLog.html",sectionName,log=onboardLog.read())
 
 @crewOnboardLog_blueprint.route("/<member>",methods=["GET"])
 @require_login
 async def readMemberLog(member):
     onboardLog = OnboardLog()
-    return standardReturn("crewOnboardLog.html",SECTIONNAME=sectionName,log=onboardLog.read())
+    return standardReturn("crewOnboardLog.html",sectionName,log=onboardLog.read())

@@ -24,16 +24,16 @@ sectionName = "Duties"
 @duties_blueprint.route("/duty/<duty>",methods=["GET"])
 @require_login
 async def duty(duty):
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
 
 @duties_blueprint.route("/add",methods=["GET","POST"])
 @require_role(DutiesPermissions.addDutyRole)
 async def add():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
     # form = AddDutyForm()
     # if request.method == 'GET':
-    #     return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName)
+    #     return await render_template("dutiesAdd.html",FORM=form,sectionName)
     # elif request.method == 'POST':
     #     name         = (await request.form)['Name']
     #     description  = (await request.form)['Description']
@@ -45,19 +45,19 @@ async def add():
     #                     s.add(duty)
     #                     s.commit()
     #         except Exception as e:
-    #             return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE=str(e))
-    #         return await render_template("dutiesAdd.html",FORM=form,SECTIONNAME=sectionName,MESSAGE="Success")
+    #             return await render_template("dutiesAdd.html",FORM=form,sectionName,MESSAGE=str(e))
+    #         return await render_template("dutiesAdd.html",FORM=form,sectionName,MESSAGE="Success")
     # else:
-    #     return await render_template("error.html",error="Invalid method",SECTIONNAME=sectionName)
+    #     return await render_template("error.html",error="Invalid method",sectionName)
 
 @duties_blueprint.route("/remove",methods=["GET","POST"])
 @require_role(DutiesPermissions.removeDutyRole)
 async def remove():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack
 
 @duties_blueprint.route("/edit",methods=["GET","POST"])
 @require_role(DutiesPermissions.editDutyRole)
 async def edit():
-    return await standardReturn("implement.html",SECTIONNAME=sectionName,implement="Implement!")
+    return await standardReturn("implement.html",sectionName,implement="Implement!")
     #TODO: Make it work with keycloack

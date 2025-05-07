@@ -14,4 +14,4 @@ sectionName = "Home Page"
 
 @index_blueprint.route("/")
 async def index():
-    return await standardReturn("index.html",SECTIONNAME=sectionName)
+    return await standardReturn("index.html",sectionName)
