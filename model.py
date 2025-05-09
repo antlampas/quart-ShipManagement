@@ -34,6 +34,17 @@ class PersonalBaseInformationsTable(db.Model):
     FirstName:  Mapped[int]
     LastName:   Mapped[str]
 
+class CrewMemberTable(db.Model):
+    __tablename__ = "CrewMember"
+    PersonalBaseInformations:   Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete')
+    Rank:                       Mapped["CrewMemberRankTable"]           = relationship(cascade='all,delete')
+    Division:                   Mapped["CrewMemberDivisionTable"]       = relationship(cascade='all,delete')
+    Duties:                     Mapped[list["CrewMemberDutyTable"]]     = relationship(cascade='all,delete')
+    SticMembership:             Mapped["STICMembership"]                = relationship(cascade='all,delete')
+    PersonalBaseInformationsId: Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
+    Serial:                     Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
+    SticSerial:                 Mapped[int]                             = mapped_column(ForeignKey("STICMembership.SticSerial"))
+
 class DutyTable(db.Model):
     __tablename__ = "Duty"
     CrewMemberDuty: Mapped["CrewMemberDutyTable"] = relationship(cascade='all,delete')
@@ -52,6 +63,12 @@ class DivisionTable(db.Model):
     CrewMemberSecondaryDivision: Mapped["CrewMemberSecondaryDivisionTable"] = relationship(cascade='all,delete')
     Name:                        Mapped[str]                                = mapped_column(primary_key=True)
     Description:                 Mapped[str]
+
+class STICMembership(db.Model):
+    __tablename__ = "SticMembership"
+    Member:       Mapped["CrewMemberTable"] = relationship(cascade='all,delete')
+    MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
+    SticSerial:   Mapped[int]               = mapped_column(primary_key=True)
 
 class CrewMemberRankTable(db.Model):
     __tablename__ = "CrewMemberRank"
@@ -84,15 +101,6 @@ class CrewMemberSecondaryDivisionTable(db.Model):
     Id:           Mapped[int]               = mapped_column(primary_key=True,autoincrement=True)
     DivisionName: Mapped[str]               = mapped_column(ForeignKey("Division.Name"))
     MemberSerial: Mapped[int]               = mapped_column(ForeignKey("CrewMember.Serial"))
-
-class CrewMemberTable(db.Model):
-    __tablename__ = "CrewMember"
-    PersonalBaseInformations:   Mapped["PersonalBaseInformationsTable"] = relationship(cascade='all,delete')
-    Rank:                       Mapped["CrewMemberRankTable"]           = relationship(cascade='all,delete')
-    Division:                   Mapped["CrewMemberDivisionTable"]       = relationship(cascade='all,delete')
-    Duties:                     Mapped[list["CrewMemberDutyTable"]]     = relationship(cascade='all,delete')
-    PersonalBaseInformationsId: Mapped[int]                             = mapped_column(ForeignKey("PersonalBaseInformations.Id"))
-    Serial:                     Mapped[int]                             = mapped_column(primary_key=True,autoincrement=True)
 
 class TaskTable(db.Model):
     __tablename__ = "Task"
@@ -197,6 +205,9 @@ def selectCrew(member=""):
         ).join(
             CrewMemberDivisionTable,
             CrewMemberTable.Serial == CrewMemberDivisionTable.MemberSerial
+        ).join(
+            STICMembership,
+            CrewMemberTable.Serial == STICMembership.SticSerial
         ).where(text(where_clause))
 
 def selectPerson(person=""):
