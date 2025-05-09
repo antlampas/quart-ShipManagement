@@ -15,7 +15,12 @@ from model          import MemberMissionLogEntryTable
 
 from authorization  import require_role
 from authorization  import require_login
+
 from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
 
 sectionName = "Crew Onboard Log"

@@ -1,3 +1,12 @@
+import re
+
+from types          import SimpleNamespace
+from time           import sleep
+from jose           import jwt
+from sqlalchemy     import select
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import and_
+
 from quart          import Blueprint
 from quart          import current_app
 from quart          import render_template
@@ -5,13 +14,6 @@ from quart          import request
 from quart          import redirect
 from quart          import url_for
 from quart          import session
-from sqlalchemy     import select
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import and_
-
-from types          import SimpleNamespace
-from time           import sleep
-from jose           import jwt
 
 from model          import db
 from model          import PersonalBaseInformationsTable
@@ -40,28 +42,44 @@ from forms          import EditCrewMemberForm
 from authorization  import require_user
 from authorization  import require_role
 from authorization  import require_login
+
 from permissions    import CrewPermissions
-from baseClasses    import Editable,Addable
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
+
+isAlpha  = r"^[A-Za-z]+$"
+isNumber = r"^[0-9]+$"
 
 crew_blueprint = Blueprint("crew",__name__,url_prefix='/crew',template_folder='templates/default')
 
 sectionName = "Crew"
 
 class CrewMember(Editable):
-    def __init__(self,source="db",FirstName="",LastName="",Nickname="",Serial=0,Stic=0,Rank="",Division="",Duties=list()):
+    def __init__(self,source="db",FirstName="",LastName="",Nickname="",Rank="",Division="",Duties=list(),Serial=0,Stic=0):
         self.Error  = ""
         self.source = source
+        #TODO: Make it work with keycloack too
         if self.source == "db":
             with db.bind.Session() as s:
                 with s.begin():
                     crewMemberInformations = s.scalar(selectCrew(self.Nickname))
                     if crewMemberInformations:
-                        self.Serial = crewMemberInformations.Serial
-                        self.Stic   = crewMemberInformations.Stic
+                        if re.match(isNumber,crewMemberInformations.Serial):
+                            self.Serial = crewMemberInformations.Serial
+                        else:
+                            self.Error = "Member serial is not a number"
+                            raise Exception(self.Error)
+                        if re.match(isNumber,crewMemberInformations.Stic):
+                            self.Stic   = crewMemberInformations.Stic
+                        else:
+                            self.Error = "Member STIC membership is not a number"
+                            raise Exception(self.Error)
                     else:
                         self.Error = "Crew member not found"
-                        return
+                        raise Exception(self.Error)
         self.FirstName = FirstName
         self.LastName  = LastName
         self.Nickname  = Nickname
@@ -70,51 +88,97 @@ class CrewMember(Editable):
         self.Duties    = Duties
 
     def edit(self,attributes:dict):
-        for key in attributes:
+        for key,value in attributes:
             try:
                 attribute = getattr(self,key)
+                attribute = value
             except Exception as e:
                 print(e)
-        person             = PersonalBaseInformationsTable(FirstName=self.FirstName,LastName=self.LastName,Nickname=self.Nickname)
-        crewMember         = CrewMemberTable(PersonalBaseInformationsId=person.Id)
-        crewMemberRank     = CrewMemberRankTable(MemberSerial=crewMember.Serial,RankName=rank)
-        crewMemberDivision = CrewMemberDivisionTable(MemberSerial=crewMember.Serial,DivisionName=division)
-        crewMemberDuty     = [ CrewMemberDutyTable(MemberSerial=self.Serial,DutyName=duty.name) for duty in self.Duties ]
-        #TODO: save editd to database
-    def load(self,Nickname="",Serial=0):
+        #TODO: Make it work with keycloack too
+        if self.source == "db":
+            person             = PersonalBaseInformationsTable(FirstName=self.FirstName,LastName=self.LastName,Nickname=self.Nickname)
+            crewMember         = CrewMemberTable(PersonalBaseInformationsId=person.Id)
+            crewMemberRank     = CrewMemberRankTable(MemberSerial=crewMember.Serial,RankName=rank)
+            crewMemberDivision = CrewMemberDivisionTable(MemberSerial=crewMember.Serial,DivisionName=division)
+            crewMemberDuty     = [ CrewMemberDutyTable(MemberSerial=self.Serial,DutyName=duty.name) for duty in self.Duties ]
         with db.bind.Session() as s:
             with s.begin():
-                if Nickname:
-                    crewMemberInformations = s.scalar(selectCrew(Nickname))
-                elif Serial:
-                    crewMemberInformations = s.scalar(selectCrew(Serial))
-                else:
-                    self.Error = "Search clause missing"
-                    return
-                if crewMemberInformations:
-                    self.FirstName = crewMemberInformations.FirstName
-                    self.LastName  = crewMemberInformations.LastName
-                    self.Nickname  = crewMemberInformations.Nickname
-                    self.Serial    = crewMemberInformations.Serial
-                    self.Rank      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().RankName
-                    self.Division  = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().DivisionName
-                    self.Duties    = [ duty.Dutyname for duty in s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).all() ]
-                    self.Stic      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().Stic
-                else:
-                    self.Error = "Crew member not found"
-                    return
+                s.commit()
+    def load(self,Nickname="",Serial=0):
+        #TODO: Make it work with keycloack too
+        if self.source == "db":
+            with db.bind.Session() as s:
+                with s.begin():
+                    if Nickname:
+                        crewMemberInformations = s.scalar(selectCrew(Nickname))
+                    elif Serial:
+                        crewMemberInformations = s.scalar(selectCrew(Serial))
+                    else:
+                        self.Error = "Search clause missing"
+                        return
+                    if crewMemberInformations:
+                        self.FirstName = crewMemberInformations.FirstName
+                        self.LastName  = crewMemberInformations.LastName
+                        self.Nickname  = crewMemberInformations.Nickname
+                        self.Serial    = crewMemberInformations.Serial
+                        self.Rank      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().RankName
+                        self.Division  = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().DivisionName
+                        self.Duties    = [ duty.Dutyname for duty in s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).all() ]
+                        self.Stic      = s.query(CrewMemberDutyTable).filter_by(MemberSerial=memberSerial).first().Stic
+                    else:
+                        self.Error = "Crew member not found"
+                        return
 
 class Crew(Addable):
-    def __init__(self,member:CrewMember):
-        with db.bind.Session() as s:
-            with s.begin():
-                crew = s.scalars(selectCrew()).all()
-                for member in crew:
-
+    def __init__(self,source="db"):
+        self.source="db"
+        self.crew = list()
+        #TODO: Make it work with keycloack too
+        if self.source == "db":
+            with db.bind.Session() as s:
+                with s.begin():
+                    crew = s.scalars(selectCrew()).all()
+                    for member in crew:
+                        if re.match(member.FirstName,isAlpha) and
+                        re.match(member.LastName,isAlpha)     and
+                        re.match(member.Nickname,isAlpha)     and
+                        re.match(member.Rank,isAlpha)         and
+                        re.match(member.Division,isAlpha)     and
+                        re.match(member.Duties,isAlpha)       and
+                        re.match(member.Serial,isNumber)      and
+                        re.match(member.Stic,isNumber):
+                            self.crew.append(CrewMember("db",
+                                                        member.FirstName,
+                                                        member.LastName,
+                                                        member.Nickname,
+                                                        member.Rank,
+                                                        member.Division,
+                                                        member.Duties,
+                                                        member.Serial,
+                                                        member.Stic
+                                                    ))
     def add(self,member:CrewMember):
-        pass
+        if re.match(member.FirstName,isAlpha) and
+           re.match(member.LastName,isAlpha)  and
+           re.match(member.Nickname,isAlpha)  and
+           re.match(member.Rank,isAlpha)      and
+           re.match(member.Division,isAlpha)  and
+           re.match(member.Duties,isAlpha)    and
+           re.match(member.Serial,isNumber)   and
+           re.match(member.Stic,isNumber):
+            #TODO: Make it work with keycloack too
+            self.crew.append(CrewMember("db",
+                                        member.FirstName,
+                                        member.LastName,
+                                        member.Nickname,
+                                        member.Rank,
+                                        member.Division,
+                                        member.Duties,
+                                        member.Serial,
+                                        member.Stic
+                                    ))
     def remove(self,member:CrewMember):
-        pass
+        self.crew.remove(member)
     def load(self):
         pass
 
@@ -148,7 +212,7 @@ async def member(member):
 @require_role(CrewPermissions.addMemberRole)
 async def add():
     return await standardReturn("implement.html",sectionName,implement="Implement!")
-    #TODO: Make it work with keycloack
+    #TODO: Make it work with keycloack too
     form   = AddCrewMemberForm()
     if request.method == 'GET':
         ranks     = []

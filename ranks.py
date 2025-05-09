@@ -15,7 +15,12 @@ from forms import EditRankForm
 
 from authorization  import require_role
 from authorization  import require_login
-from permissions    import RanksPermissions
+
+from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
 
 ranks_blueprint = Blueprint("ranks",__name__,url_prefix='/ranks',template_folder='templates/default')

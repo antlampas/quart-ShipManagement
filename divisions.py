@@ -17,7 +17,12 @@ from forms          import EditDivisionForm
 
 from authorization  import require_role
 from authorization  import require_login
-from permissions    import DivisionsPermissions
+
+from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
 
 divisions_blueprint = Blueprint("divisions",__name__,url_prefix='/divisions',template_folder='templates/default')

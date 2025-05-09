@@ -1,7 +1,5 @@
 from quart import current_app,Blueprint
 
-from authorization  import require_role
-
 from model import db
 from model import CrewMemberTable
 from model import TaskTable
@@ -9,7 +7,12 @@ from model import MemberTaskLogEntryTable
 
 from authorization  import require_role
 from authorization  import require_login
-from permissions    import TasksPermissions
+
+from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
 
 tasks_blueprint = Blueprint("tasks",__name__,url_prefix='/tasks',template_folder='templates/default')

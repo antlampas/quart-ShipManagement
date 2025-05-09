@@ -12,7 +12,12 @@ from model import MemberMissionLogEntryTable
 
 from authorization  import require_role
 from authorization  import require_login
-from permissions    import MissionsPermissions
+
+from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
 
 missions_blueprint = Blueprint("missions",__name__,url_prefix='/missions',template_folder='templates/default')

@@ -15,8 +15,14 @@ from forms          import EditDutyForm
 
 from authorization  import require_role
 from authorization  import require_login
-from permissions    import DutiesPermissions
+
+from permissions    import CrewOnBoardLogPermissions
+
+from baseClasses    import Editable
+from baseClasses    import Addable
+
 from standardReturn import standardReturn
+
 duties_blueprint = Blueprint("duties",__name__,url_prefix='/duties',template_folder='templates/default')
 
 sectionName = "Duties"
