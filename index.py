@@ -4,8 +4,6 @@ from quart import render_template
 from quart import request
 from quart import session
 
-from jose import jwt
-
 from standardReturn import standardReturn
 
 index_blueprint = Blueprint("index",__name__,template_folder='templates/default')

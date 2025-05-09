@@ -12,7 +12,7 @@ def require_role(*requiredRoles):
             if 'auth_token' in session:
                 token                 = jwt.get_unverified_claims(session['auth_token']['access_token'])
                 userRoles             = token['groups']
-                numberOfRequiredRoles = len(userRoles)
+                numberOfRequiredRoles = len(requiredRoles)
                 rolesMatched          = 0
                 for requiredRole in requiredRoles:
                     for userRole in userRoles:
