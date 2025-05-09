@@ -139,13 +139,13 @@ class Crew(Addable):
                 with s.begin():
                     crew = s.scalars(selectCrew()).all()
                     for member in crew:
-                        if re.match(member.FirstName,isAlpha) and
-                        re.match(member.LastName,isAlpha)     and
-                        re.match(member.Nickname,isAlpha)     and
-                        re.match(member.Rank,isAlpha)         and
-                        re.match(member.Division,isAlpha)     and
-                        re.match(member.Duties,isAlpha)       and
-                        re.match(member.Serial,isNumber)      and
+                        if re.match(member.FirstName,isAlpha) and \
+                        re.match(member.LastName,isAlpha)     and \
+                        re.match(member.Nickname,isAlpha)     and \
+                        re.match(member.Rank,isAlpha)         and \
+                        re.match(member.Division,isAlpha)     and \
+                        re.match(member.Duties,isAlpha)       and \
+                        re.match(member.Serial,isNumber)      and \
                         re.match(member.Stic,isNumber):
                             self.crew.append(CrewMember("db",
                                                         member.FirstName,
@@ -158,13 +158,13 @@ class Crew(Addable):
                                                         member.Stic
                                                     ))
     def add(self,member:CrewMember):
-        if re.match(member.FirstName,isAlpha) and
-           re.match(member.LastName,isAlpha)  and
-           re.match(member.Nickname,isAlpha)  and
-           re.match(member.Rank,isAlpha)      and
-           re.match(member.Division,isAlpha)  and
-           re.match(member.Duties,isAlpha)    and
-           re.match(member.Serial,isNumber)   and
+        if re.match(member.FirstName,isAlpha) and \
+           re.match(member.LastName,isAlpha)  and \
+           re.match(member.Nickname,isAlpha)  and \
+           re.match(member.Rank,isAlpha)      and \
+           re.match(member.Division,isAlpha)  and \
+           re.match(member.Duties,isAlpha)    and \
+           re.match(member.Serial,isNumber)   and \
            re.match(member.Stic,isNumber):
             #TODO: Make it work with keycloack too
             self.crew.append(CrewMember("db",
@@ -185,12 +185,12 @@ class Crew(Addable):
 @crew_blueprint.route("/",methods=["GET"])
 @require_login
 async def crew():
-    crew = list()
-    with db.bind.Session() as s:
-        with s.begin():
-            crew = s.scalars(selectCrew()).all()
-    if len(crew) > 0:
-        return await standardReturn("crew.html",sectionName,crew=crew)
+    crew = Crew()
+    # with db.bind.Session() as s:
+    #     with s.begin():
+    #         crew = s.scalars(selectCrew()).all()
+    if len(crew.crew) > 0:
+        return await standardReturn("crew.html",sectionName,CREW=crew.crew)
     else:
         return await standardReturn("error.html",sectionName,error="No crew member found")
 

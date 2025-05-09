@@ -6,13 +6,13 @@
     <a href="/crew/remove">Rimuovi membro</a>
     <a href="/crew/edit">Modifica membro</a>
 </nav>
-{% if crew is defined %}
-{% if (crew is iterable) and (crew is not string) and (crew is not mapping) %}
-{% for i in crew %}
+{% if CREW is defined %}
+{% if (CREW is iterable) and (CREW is not string) and (CREW is not mapping) %}
+{% for i in CREW %}
 <a href="/crew/member/{{ i.Nickname }}">{{ i.Nickname }}</a><br />
 {% endfor%}
 {% else %}
-<p>{{ crew }}</p>
+<p>{{ CREW }}</p>
 {% endif %}
 {% endif %}
 {% endblock%}

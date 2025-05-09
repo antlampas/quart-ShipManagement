@@ -16,7 +16,7 @@ from forms import EditRankForm
 from authorization  import require_role
 from authorization  import require_login
 
-from permissions    import CrewOnBoardLogPermissions
+from permissions    import RanksPermissions
 
 from baseClasses    import Editable
 from baseClasses    import Addable

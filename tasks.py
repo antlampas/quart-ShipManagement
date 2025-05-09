@@ -8,7 +8,7 @@ from model import MemberTaskLogEntryTable
 from authorization  import require_role
 from authorization  import require_login
 
-from permissions    import CrewOnBoardLogPermissions
+from permissions    import TasksPermissions
 
 from baseClasses    import Editable
 from baseClasses    import Addable
